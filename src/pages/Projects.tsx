@@ -176,46 +176,48 @@ const Projects = () => {
     <div className="flex min-h-screen flex-col bg-background">
       {/* Header */}
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex h-16 items-center justify-between px-4">
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-primary">My Projects</h1>
+        <div className="flex h-14 sm:h-16 items-center justify-between px-3 sm:px-4">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <h1 className="text-lg sm:text-2xl font-bold text-primary">My Projects</h1>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1 sm:gap-3">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => navigate("/notifications")}
+              className="h-9 w-9 sm:h-10 sm:w-10"
             >
-              <Bell className="h-5 w-5" />
+              <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
             </Button>
             <Button
               variant="ghost"
               size="icon"
               onClick={() => navigate("/profile")}
+              className="h-9 w-9 sm:h-10 sm:w-10"
             >
-              <User className="h-5 w-5" />
+              <User className="h-4 w-4 sm:h-5 sm:w-5" />
             </Button>
             <Button
               variant="ghost"
               onClick={confirmGoHome}
-              className="gap-2 text-gray-600 hover:text-gray-700 hover:bg-gray-50"
+              className="gap-1 sm:gap-2 text-gray-600 hover:text-gray-700 hover:bg-gray-50 text-sm sm:text-base px-2 sm:px-4"
             >
               <Home className="h-4 w-4" />
-              Home
+              <span className="hidden xs:inline">Home</span>
             </Button>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto px-4 py-6">
-        <div className="mx-auto max-w-4xl space-y-6">
+      <main className="flex-1 overflow-y-auto px-3 sm:px-4 py-4 sm:py-6">
+        <div className="mx-auto max-w-4xl space-y-4 sm:space-y-6">
           
           {/* Stats & Browse Projects Section */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
             {/* Quick Stats */}
-            <Card className="p-6 card-enhanced">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Your Progress</h3>
+            <Card className="p-4 sm:p-6 card-enhanced">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Your Progress</h3>
               <div className="grid grid-cols-3 gap-4">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-purple-600">{totalApplied}</div>
@@ -243,9 +245,9 @@ const Projects = () => {
             </Card>
 
             {/* Browse Projects CTA */}
-            <Card className="p-6 card-enhanced gradient-purple text-white relative overflow-hidden">
+            <Card className="p-4 sm:p-6 card-enhanced gradient-purple text-white relative overflow-hidden">
               <div className="relative z-10">
-                <h3 className="text-lg font-semibold mb-2">Find New Projects</h3>
+                <h3 className="text-base sm:text-lg font-semibold mb-2">Find New Projects</h3>
                 <p className="text-white/90 text-sm mb-4">
                   Discover exciting projects from local businesses
                 </p>

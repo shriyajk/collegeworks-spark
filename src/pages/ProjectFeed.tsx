@@ -100,45 +100,46 @@ const ProjectFeed = () => {
     <div className="flex min-h-screen flex-col bg-gray-50">
       {/* Header */}
       <header className="sticky top-0 z-50 border-b glass backdrop-blur-md border-white/20">
-        <div className="flex h-16 items-center justify-between px-4">
-          <div className="flex items-center gap-3">
+        <div className="flex h-14 sm:h-16 items-center justify-between px-3 sm:px-4">
+          <div className="flex items-center gap-1 sm:gap-3 overflow-hidden">
             <Button
               variant="ghost"
               onClick={() => navigate("/projects")}
-              className="gap-2 text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+              className="gap-1 sm:gap-2 text-purple-600 hover:text-purple-700 hover:bg-purple-50 text-xs sm:text-base px-2 sm:px-4 h-8 sm:h-10"
             >
-              <FolderOpen className="h-4 w-4" />
-              My Projects
+              <FolderOpen className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">My Projects</span>
             </Button>
-            <h1 className="text-2xl font-bold text-gradient">CampusBuild</h1>
+            <h1 className="text-base sm:text-2xl font-bold text-gradient truncate">CampusBuild</h1>
           </div>
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon">
-              <Bell className="h-5 w-5" />
+          <div className="flex items-center gap-1 sm:gap-3">
+            <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-10 sm:w-10">
+              <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
             </Button>
             <Button
               variant="ghost"
               size="icon"
               onClick={() => navigate("/profile")}
+              className="h-8 w-8 sm:h-10 sm:w-10"
             >
-              <User className="h-5 w-5" />
+              <User className="h-4 w-4 sm:h-5 sm:w-5" />
             </Button>
             <Button
               variant="ghost"
               onClick={confirmGoHome}
-              className="gap-2 text-gray-600 hover:text-gray-700 hover:bg-gray-50"
+              className="gap-1 sm:gap-2 text-gray-600 hover:text-gray-700 hover:bg-gray-50 text-xs sm:text-base px-2 sm:px-4 h-8 sm:h-10"
             >
-              <Home className="h-4 w-4" />
-              Home
+              <Home className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Home</span>
             </Button>
           </div>
         </div>
       </header>
 
       {/* Filter Bar */}
-      <div className="border-b bg-background px-4 py-3 space-y-3">
+      <div className="border-b bg-background px-3 sm:px-4 py-2 sm:py-3 space-y-2 sm:space-y-3">
         <Select defaultValue="all">
-          <SelectTrigger className="w-full">
+          <SelectTrigger className="w-full h-9 sm:h-10 text-sm sm:text-base">
             <SelectValue placeholder="Filter projects" />
           </SelectTrigger>
           <SelectContent>
@@ -149,10 +150,10 @@ const ProjectFeed = () => {
           </SelectContent>
         </Select>
 
-        <div className="flex gap-2 overflow-x-auto pb-1">
+        <div className="flex gap-1.5 sm:gap-2 overflow-x-auto pb-1 -mx-1 px-1">
           <Badge
             variant={activeFilter === "all" ? "default" : "outline"}
-            className={`cursor-pointer whitespace-nowrap px-4 py-2 transition-all-smooth hover-scale ${
+            className={`cursor-pointer whitespace-nowrap px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm transition-all-smooth hover-scale ${
               activeFilter === "all" ? "gradient-purple text-white shadow-lg" : "hover:border-purple-300"
             }`}
             onClick={() => setActiveFilter("all")}
@@ -161,7 +162,7 @@ const ProjectFeed = () => {
           </Badge>
           <Badge
             variant={activeFilter === "beginner" ? "default" : "outline"}
-            className={`cursor-pointer whitespace-nowrap px-4 py-2 transition-all-smooth hover-scale ${
+            className={`cursor-pointer whitespace-nowrap px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm transition-all-smooth hover-scale ${
               activeFilter === "beginner" ? "gradient-success text-white shadow-lg" : "hover:border-emerald-300"
             }`}
             onClick={() => setActiveFilter("beginner")}
@@ -170,7 +171,7 @@ const ProjectFeed = () => {
           </Badge>
           <Badge
             variant={activeFilter === "intermediate" ? "default" : "outline"}
-            className={`cursor-pointer whitespace-nowrap px-4 py-2 transition-all-smooth hover-scale ${
+            className={`cursor-pointer whitespace-nowrap px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm transition-all-smooth hover-scale ${
               activeFilter === "intermediate" ? "bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg" : "hover:border-amber-300"
             }`}
             onClick={() => setActiveFilter("intermediate")}
@@ -179,7 +180,7 @@ const ProjectFeed = () => {
           </Badge>
           <Badge
             variant={activeFilter === "advanced" ? "default" : "outline"}
-            className={`cursor-pointer whitespace-nowrap px-4 py-2 transition-all-smooth hover-scale ${
+            className={`cursor-pointer whitespace-nowrap px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm transition-all-smooth hover-scale ${
               activeFilter === "advanced" ? "bg-gradient-to-r from-rose-500 to-rose-600 text-white shadow-lg" : "hover:border-rose-300"
             }`}
             onClick={() => setActiveFilter("advanced")}
@@ -190,8 +191,8 @@ const ProjectFeed = () => {
       </div>
 
       {/* Project Cards */}
-      <main className="flex-1 overflow-y-auto px-4 py-4">
-        <div className="mx-auto max-w-2xl space-y-4 stagger-children">
+      <main className="flex-1 overflow-y-auto px-3 sm:px-4 py-3 sm:py-4">
+        <div className="mx-auto max-w-2xl space-y-3 sm:space-y-4 stagger-children">
           {filteredProjects.map((project) => {
             const getBorderColor = (level: string) => {
               switch (level) {
@@ -205,29 +206,29 @@ const ProjectFeed = () => {
             return (
               <div
                 key={project.id}
-                className={`cursor-pointer rounded-xl border-l-4 ${getBorderColor(project.level)} bg-white p-6 shadow-md hover:shadow-xl transition-all-smooth hover-lift card-enhanced`}
+                className={`cursor-pointer rounded-xl border-l-4 ${getBorderColor(project.level)} bg-white p-4 sm:p-6 shadow-md hover:shadow-xl transition-all-smooth hover-lift card-enhanced`}
                 onClick={() => navigate(`/project/${project.id}`, { state: { project } })}
               >
-              <div className="space-y-3">
-                <div className="flex items-start justify-between">
+              <div className="space-y-2 sm:space-y-3">
+                <div className="flex items-start justify-between gap-2">
                   <Badge className={`${
                     project.level === "beginner" ? "badge-beginner" :
                     project.level === "intermediate" ? "badge-intermediate" :
                     "badge-advanced"
-                  } font-semibold`}>
+                  } font-semibold text-xs sm:text-sm`}>
                     {getLevelIcon(project.level)} {project.level.toUpperCase()}
                   </Badge>
                   {project.isNew && (
-                    <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white animate-pulse-glow">
+                    <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white animate-pulse-glow text-xs">
                       ✨ NEW
                     </Badge>
                   )}
                 </div>
 
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">{project.title}</h3>
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <span className="font-medium">{project.company}</span>
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-1 sm:mb-2">{project.title}</h3>
+                  <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
+                    <span className="font-medium truncate">{project.company}</span>
                     {project.rating && (
                       <>
                         <span>•</span>
@@ -239,11 +240,11 @@ const ProjectFeed = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-6 text-sm font-medium">
-                  <span className="flex items-center gap-2 text-emerald-600">
+                <div className="flex items-center gap-4 sm:gap-6 text-xs sm:text-sm font-medium">
+                  <span className="flex items-center gap-1 sm:gap-2 text-emerald-600">
                     💰 {project.budget}
                   </span>
-                  <span className="flex items-center gap-2 text-blue-600">
+                  <span className="flex items-center gap-1 sm:gap-2 text-blue-600">
                     📅 {project.duration}
                   </span>
                 </div>
