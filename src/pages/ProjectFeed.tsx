@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useHomeConfirmation } from "@/hooks/use-home-confirmation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Bell, User, Home, Users, Briefcase, BarChart } from "lucide-react";
+import { Bell, User, Home, Users, Briefcase, BarChart, FolderOpen } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -62,6 +63,7 @@ const PROJECTS: Project[] = [
 
 const ProjectFeed = () => {
   const navigate = useNavigate();
+  const { confirmGoHome, ConfirmationDialog } = useHomeConfirmation();
   const [activeFilter, setActiveFilter] = useState<string>("all");
 
   const filteredProjects = PROJECTS.filter((project) =>
@@ -95,11 +97,21 @@ const ProjectFeed = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-screen flex-col bg-gray-50">
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="sticky top-0 z-50 border-b glass backdrop-blur-md border-white/20">
         <div className="flex h-16 items-center justify-between px-4">
-          <h1 className="text-2xl font-bold text-primary">CampusBuild</h1>
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              onClick={() => navigate("/projects")}
+              className="gap-2 text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+            >
+              <FolderOpen className="h-4 w-4" />
+              My Projects
+            </Button>
+            <h1 className="text-2xl font-bold text-gradient">CampusBuild</h1>
+          </div>
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon">
               <Bell className="h-5 w-5" />
@@ -110,6 +122,14 @@ const ProjectFeed = () => {
               onClick={() => navigate("/profile")}
             >
               <User className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={confirmGoHome}
+              className="gap-2 text-gray-600 hover:text-gray-700 hover:bg-gray-50"
+            >
+              <Home className="h-4 w-4" />
+              Home
             </Button>
           </div>
         </div>
@@ -132,15 +152,17 @@ const ProjectFeed = () => {
         <div className="flex gap-2 overflow-x-auto pb-1">
           <Badge
             variant={activeFilter === "all" ? "default" : "outline"}
-            className="cursor-pointer whitespace-nowrap px-4 py-2"
+            className={`cursor-pointer whitespace-nowrap px-4 py-2 transition-all-smooth hover-scale ${
+              activeFilter === "all" ? "gradient-purple text-white shadow-lg" : "hover:border-purple-300"
+            }`}
             onClick={() => setActiveFilter("all")}
           >
-            All
+            All Projects
           </Badge>
           <Badge
             variant={activeFilter === "beginner" ? "default" : "outline"}
-            className={`cursor-pointer whitespace-nowrap px-4 py-2 ${
-              activeFilter === "beginner" ? "bg-success text-success-foreground hover:bg-success/90" : ""
+            className={`cursor-pointer whitespace-nowrap px-4 py-2 transition-all-smooth hover-scale ${
+              activeFilter === "beginner" ? "gradient-success text-white shadow-lg" : "hover:border-emerald-300"
             }`}
             onClick={() => setActiveFilter("beginner")}
           >
@@ -148,8 +170,8 @@ const ProjectFeed = () => {
           </Badge>
           <Badge
             variant={activeFilter === "intermediate" ? "default" : "outline"}
-            className={`cursor-pointer whitespace-nowrap px-4 py-2 ${
-              activeFilter === "intermediate" ? "bg-warning text-warning-foreground hover:bg-warning/90" : ""
+            className={`cursor-pointer whitespace-nowrap px-4 py-2 transition-all-smooth hover-scale ${
+              activeFilter === "intermediate" ? "bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg" : "hover:border-amber-300"
             }`}
             onClick={() => setActiveFilter("intermediate")}
           >
@@ -157,8 +179,8 @@ const ProjectFeed = () => {
           </Badge>
           <Badge
             variant={activeFilter === "advanced" ? "default" : "outline"}
-            className={`cursor-pointer whitespace-nowrap px-4 py-2 ${
-              activeFilter === "advanced" ? "bg-destructive text-destructive-foreground hover:bg-destructive/90" : ""
+            className={`cursor-pointer whitespace-nowrap px-4 py-2 transition-all-smooth hover-scale ${
+              activeFilter === "advanced" ? "bg-gradient-to-r from-rose-500 to-rose-600 text-white shadow-lg" : "hover:border-rose-300"
             }`}
             onClick={() => setActiveFilter("advanced")}
           >
@@ -169,73 +191,99 @@ const ProjectFeed = () => {
 
       {/* Project Cards */}
       <main className="flex-1 overflow-y-auto px-4 py-4">
-        <div className="mx-auto max-w-2xl space-y-4">
-          {filteredProjects.map((project) => (
-            <div
-              key={project.id}
-              className="cursor-pointer rounded-xl border bg-card p-4 shadow-sm transition-all hover:shadow-md hover:-translate-y-1"
-              onClick={() => navigate(`/project/${project.id}`, { state: { project } })}
-            >
+        <div className="mx-auto max-w-2xl space-y-4 stagger-children">
+          {filteredProjects.map((project) => {
+            const getBorderColor = (level: string) => {
+              switch (level) {
+                case "beginner": return "border-l-emerald-500";
+                case "intermediate": return "border-l-amber-500";
+                case "advanced": return "border-l-rose-500";
+                default: return "border-l-gray-300";
+              }
+            };
+
+            return (
+              <div
+                key={project.id}
+                className={`cursor-pointer rounded-xl border-l-4 ${getBorderColor(project.level)} bg-white p-6 shadow-md hover:shadow-xl transition-all-smooth hover-lift card-enhanced`}
+                onClick={() => navigate(`/project/${project.id}`, { state: { project } })}
+              >
               <div className="space-y-3">
                 <div className="flex items-start justify-between">
-                  <Badge className={getLevelColor(project.level)}>
+                  <Badge className={`${
+                    project.level === "beginner" ? "badge-beginner" :
+                    project.level === "intermediate" ? "badge-intermediate" :
+                    "badge-advanced"
+                  } font-semibold`}>
                     {getLevelIcon(project.level)} {project.level.toUpperCase()}
                   </Badge>
+                  {project.isNew && (
+                    <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white animate-pulse-glow">
+                      ✨ NEW
+                    </Badge>
+                  )}
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-bold">{project.title}</h3>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <span>{project.company}</span>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">{project.title}</h3>
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <span className="font-medium">{project.company}</span>
                     {project.rating && (
                       <>
                         <span>•</span>
-                        <span className="flex items-center gap-1">
+                        <span className="flex items-center gap-1 text-amber-600 font-medium">
                           ⭐ {project.rating}
                         </span>
-                      </>
-                    )}
-                    {project.isNew && (
-                      <>
-                        <span>•</span>
-                        <Badge variant="secondary" className="text-xs">
-                          New
-                        </Badge>
                       </>
                     )}
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4 text-sm">
-                  <span className="flex items-center gap-1">
+                <div className="flex items-center gap-6 text-sm font-medium">
+                  <span className="flex items-center gap-2 text-emerald-600">
                     💰 {project.budget}
                   </span>
-                  <span className="flex items-center gap-1">
+                  <span className="flex items-center gap-2 text-blue-600">
                     📅 {project.duration}
                   </span>
                 </div>
 
-                <div className="text-sm">
-                  <span className="text-muted-foreground">Skills: </span>
-                  <span>{project.skills.join(" • ")}</span>
+                <div className="flex flex-wrap gap-2">
+                  {project.skills.map((skill, index) => (
+                    <Badge 
+                      key={skill} 
+                      variant="secondary" 
+                      className={`text-xs font-medium ${
+                        skill === "React" ? "bg-blue-100 text-blue-700" :
+                        skill === "Figma" ? "bg-purple-100 text-purple-700" :
+                        skill === "CSS" ? "bg-orange-100 text-orange-700" :
+                        skill === "Frontend" ? "bg-cyan-100 text-cyan-700" :
+                        skill === "Design" ? "bg-pink-100 text-pink-700" :
+                        "bg-gray-100 text-gray-700"
+                      }`}
+                    >
+                      {skill}
+                    </Badge>
+                  ))}
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">
+                <div className="flex items-center justify-between pt-2">
+                  <span className="text-xs text-gray-500 flex items-center gap-1">
                     👁 {project.viewingCount} students viewing
                   </span>
-                  <Button variant="default" size="sm" className="gap-2">
+                  <Button className="btn-primary text-sm font-semibold px-6">
                     View Details →
                   </Button>
                 </div>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="sticky bottom-0 z-50 border-t bg-background">
+      <nav className="sticky bottom-0 z-50 border-t glass backdrop-blur-md border-white/20">
         <div className="flex h-16 items-center justify-around px-4">
           <Button
             variant="ghost"
@@ -263,26 +311,10 @@ const ProjectFeed = () => {
             <Briefcase className="h-5 w-5" />
             <span className="text-xs">Projects</span>
           </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="flex flex-col gap-1 text-muted-foreground"
-            onClick={() => navigate("/stats")}
-          >
-            <BarChart className="h-5 w-5" />
-            <span className="text-xs">Stats</span>
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="flex flex-col gap-1 text-muted-foreground"
-            onClick={() => navigate("/profile")}
-          >
-            <User className="h-5 w-5" />
-            <span className="text-xs">Profile</span>
-          </Button>
         </div>
       </nav>
+      
+      <ConfirmationDialog />
     </div>
   );
 };
