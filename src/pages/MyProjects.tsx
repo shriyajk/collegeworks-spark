@@ -127,44 +127,44 @@ const MyProjects = () => {
   };
 
   const ProjectCard = ({ project }: { project: Project }) => (
-    <Card className="p-6 hover:shadow-md transition-shadow">
-      <div className="space-y-4">
+    <Card className="p-4 sm:p-6 hover:shadow-md transition-shadow">
+      <div className="space-y-3 sm:space-y-4">
         {/* Header */}
-        <div className="flex items-start justify-between">
-          <div className="space-y-2">
-            <h3 className="text-lg font-semibold">{project.title}</h3>
-            <p className="text-sm text-muted-foreground line-clamp-2">
+        <div className="flex items-start justify-between gap-2">
+          <div className="space-y-1 sm:space-y-2 flex-1 min-w-0">
+            <h3 className="text-base sm:text-lg font-semibold truncate">{project.title}</h3>
+            <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">
               {project.description}
             </p>
           </div>
-          <Badge className={getStatusColor(project.status)}>
+          <Badge className={`${getStatusColor(project.status)} flex-shrink-0`}>
             <div className="flex items-center gap-1">
               {getStatusIcon(project.status)}
-              <span className="capitalize">{project.status}</span>
+              <span className="capitalize text-xs sm:text-sm">{project.status}</span>
             </div>
           </Badge>
         </div>
 
         {/* Project Details */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-          <div className="flex items-center gap-2">
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-            <span>${project.budget}</span>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 text-xs sm:text-sm">
+          <div className="flex items-center gap-1 sm:gap-2">
+            <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0" />
+            <span className="truncate">${project.budget}</span>
           </div>
-          <div className="flex items-center gap-2">
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-            <span>{project.timeline}</span>
+          <div className="flex items-center gap-1 sm:gap-2">
+            <Calendar className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0" />
+            <span className="truncate">{project.timeline}</span>
           </div>
           {project.team && (
-            <div className="flex items-center gap-2">
-              <Users className="h-4 w-4 text-muted-foreground" />
-              <span>{project.team.name}</span>
+            <div className="flex items-center gap-1 sm:gap-2">
+              <Users className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0" />
+              <span className="truncate">{project.team.name}</span>
             </div>
           )}
           {project.applications && (
-            <div className="flex items-center gap-2">
-              <Users className="h-4 w-4 text-muted-foreground" />
-              <span>{project.applications} applications</span>
+            <div className="flex items-center gap-1 sm:gap-2">
+              <Users className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0" />
+              <span className="truncate">{project.applications} applications</span>
             </div>
           )}
         </div>
@@ -185,20 +185,20 @@ const MyProjects = () => {
           {project.status === "active" && (
             <Button
               onClick={() => navigate("/project-dashboard", { state: { project } })}
-              className="flex-1 gap-2"
+              className="flex-1 gap-1 sm:gap-2 text-xs sm:text-sm h-9 sm:h-10"
             >
-              <BarChart3 className="h-4 w-4" />
-              Manage Project
+              <BarChart3 className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden xs:inline">Manage</span>
             </Button>
           )}
           
           {project.status === "review" && (
             <Button
               onClick={() => navigate("/review-applications", { state: { project } })}
-              className="flex-1 gap-2"
+              className="flex-1 gap-1 sm:gap-2 text-xs sm:text-sm h-9 sm:h-10"
             >
-              <Eye className="h-4 w-4" />
-              Review Applications
+              <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden xs:inline">Review</span>
             </Button>
           )}
           
@@ -206,20 +206,20 @@ const MyProjects = () => {
             <Button
               onClick={() => navigate("/business-success", { state: { project } })}
               variant="outline"
-              className="flex-1 gap-2"
+              className="flex-1 gap-1 sm:gap-2 text-xs sm:text-sm h-9 sm:h-10"
             >
-              <CheckCircle2 className="h-4 w-4" />
-              View Results
+              <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden xs:inline">Results</span>
             </Button>
           )}
           
           {project.status === "draft" && (
             <Button
               onClick={() => navigate("/post-project", { state: { project, isEditing: true } })}
-              className="flex-1 gap-2"
+              className="flex-1 gap-1 sm:gap-2 text-xs sm:text-sm h-9 sm:h-10"
             >
-              <Settings className="h-4 w-4" />
-              Continue Editing
+              <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden xs:inline">Edit</span>
             </Button>
           )}
 
@@ -227,8 +227,9 @@ const MyProjects = () => {
             variant="outline"
             size="icon"
             onClick={() => navigate("/messages", { state: { projectId: project.id } })}
+            className="h-9 w-9 sm:h-10 sm:w-10"
           >
-            <MessageCircle className="h-4 w-4" />
+            <MessageCircle className="h-3 w-3 sm:h-4 sm:w-4" />
           </Button>
         </div>
       </div>
@@ -238,47 +239,47 @@ const MyProjects = () => {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       {/* Header */}
-      <div className="p-4 border-b">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+      <div className="p-3 sm:p-4 border-b">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1 sm:gap-3 overflow-hidden flex-1">
             <Button
               variant="ghost"
               onClick={() => navigate("/business-dashboard")}
-              className="gap-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+              className="gap-1 sm:gap-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 text-xs sm:text-base px-2 sm:px-4 h-8 sm:h-10"
             >
-              <ArrowLeft className="h-4 w-4" />
-              Back to Dashboard
+              <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Back to Dashboard</span>
             </Button>
             <Button
               variant="ghost"
               onClick={() => navigate("/business-dashboard")}
-              className="gap-2"
+              className="gap-1 sm:gap-2 text-xs sm:text-base px-2 sm:px-4 h-8 sm:h-10 hidden md:flex"
             >
               Dashboard
             </Button>
-            <div className="border-l pl-3 ml-3">
-              <h1 className="text-xl font-bold">My Projects</h1>
-              <p className="text-sm text-muted-foreground">
+            <div className="border-l pl-2 sm:pl-3 ml-1 sm:ml-3">
+              <h1 className="text-sm sm:text-xl font-bold truncate">My Projects</h1>
+              <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">
                 Manage all your posted projects
               </p>
             </div>
           </div>
           <Button
             onClick={() => navigate("/post-project")}
-            className="gap-2 bg-blue-600 hover:bg-blue-700"
+            className="gap-1 sm:gap-2 bg-blue-600 hover:bg-blue-700 text-xs sm:text-base px-2 sm:px-4 h-8 sm:h-10"
           >
-            <Plus className="h-4 w-4" />
-            New Project
+            <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden xs:inline">New Project</span>
           </Button>
         </div>
       </div>
 
       {/* Main Content */}
-      <main className="flex-1 px-4 py-6">
+      <main className="flex-1 px-3 sm:px-4 py-4 sm:py-6">
         <div className="mx-auto max-w-6xl">
           
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
             {/* <Card className="p-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -291,38 +292,38 @@ const MyProjects = () => {
               </div>
             </Card> */}
             
-            <Card className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-                  <Clock className="h-5 w-5 text-yellow-600" />
+            <Card className="p-3 sm:p-4">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-yellow-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-600" />
                 </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">In Review</p>
-                  <p className="text-2xl font-bold">{filterProjects("review").length}</p>
-                </div>
-              </div>
-            </Card>
-            
-            <Card className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                  <CheckCircle2 className="h-5 w-5 text-green-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Completed</p>
-                  <p className="text-2xl font-bold">{filterProjects("completed").length}</p>
+                <div className="min-w-0">
+                  <p className="text-xs sm:text-sm text-muted-foreground truncate">In Review</p>
+                  <p className="text-xl sm:text-2xl font-bold">{filterProjects("review").length}</p>
                 </div>
               </div>
             </Card>
             
-            <Card className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                  <DollarSign className="h-5 w-5 text-gray-600" />
+            <Card className="p-3 sm:p-4">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
                 </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Total Spent</p>
-                  <p className="text-2xl font-bold">
+                <div className="min-w-0">
+                  <p className="text-xs sm:text-sm text-muted-foreground truncate">Completed</p>
+                  <p className="text-xl sm:text-2xl font-bold">{filterProjects("completed").length}</p>
+                </div>
+              </div>
+            </Card>
+            
+            <Card className="p-3 sm:p-4">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs sm:text-sm text-muted-foreground truncate">Total Spent</p>
+                  <p className="text-xl sm:text-2xl font-bold">
                     ${filterProjects("completed").reduce((sum, p) => sum + p.budget, 0)}
                   </p>
                 </div>
@@ -331,40 +332,40 @@ const MyProjects = () => {
           </div>
 
           {/* Projects Tabs */}
-          <Tabs defaultValue="all" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-5">
-              <TabsTrigger value="all">All Projects</TabsTrigger>
-              <TabsTrigger value="active">Active</TabsTrigger>
-              <TabsTrigger value="review">In Review</TabsTrigger>
-              <TabsTrigger value="completed">Completed</TabsTrigger>
-              <TabsTrigger value="draft">Drafts</TabsTrigger>
+          <Tabs defaultValue="all" className="space-y-4 sm:space-y-6">
+            <TabsList className="grid w-full grid-cols-5 h-auto">
+              <TabsTrigger value="all" className="text-xs sm:text-sm px-1 sm:px-3 py-2">All</TabsTrigger>
+              <TabsTrigger value="active" className="text-xs sm:text-sm px-1 sm:px-3 py-2">Active</TabsTrigger>
+              <TabsTrigger value="review" className="text-xs sm:text-sm px-1 sm:px-3 py-2">Review</TabsTrigger>
+              <TabsTrigger value="completed" className="text-xs sm:text-sm px-1 sm:px-3 py-2">Done</TabsTrigger>
+              <TabsTrigger value="draft" className="text-xs sm:text-sm px-1 sm:px-3 py-2">Drafts</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="all" className="space-y-4">
+            <TabsContent value="all" className="space-y-3 sm:space-y-4">
               {projects.map(project => (
                 <ProjectCard key={project.id} project={project} />
               ))}
             </TabsContent>
 
-            <TabsContent value="active" className="space-y-4">
+            <TabsContent value="active" className="space-y-3 sm:space-y-4">
               {filterProjects("active").map(project => (
                 <ProjectCard key={project.id} project={project} />
               ))}
             </TabsContent>
 
-            <TabsContent value="review" className="space-y-4">
+            <TabsContent value="review" className="space-y-3 sm:space-y-4">
               {filterProjects("review").map(project => (
                 <ProjectCard key={project.id} project={project} />
               ))}
             </TabsContent>
 
-            <TabsContent value="completed" className="space-y-4">
+            <TabsContent value="completed" className="space-y-3 sm:space-y-4">
               {filterProjects("completed").map(project => (
                 <ProjectCard key={project.id} project={project} />
               ))}
             </TabsContent>
 
-            <TabsContent value="draft" className="space-y-4">
+            <TabsContent value="draft" className="space-y-3 sm:space-y-4">
               {filterProjects("draft").map(project => (
                 <ProjectCard key={project.id} project={project} />
               ))}
