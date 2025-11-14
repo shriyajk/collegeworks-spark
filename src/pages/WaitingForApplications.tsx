@@ -12,7 +12,6 @@ import {
   Calendar,
   Target,
   AlertTriangle,
-  Eye,
   Edit,
   BarChart3
 } from "lucide-react";
@@ -252,16 +251,7 @@ const WaitingForApplications = () => {
           </Card>
 
           {/* Bottom Action Buttons */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <Button
-              variant="outline"
-              onClick={() => navigate("/project-detail", { state: { project } })}
-              className="gap-2"
-            >
-              <Eye className="h-4 w-4" />
-              View Project Details
-            </Button>
-            
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <Button
               variant="outline"
               onClick={() => navigate("/post-project", { state: { project, isEditing: true } })}

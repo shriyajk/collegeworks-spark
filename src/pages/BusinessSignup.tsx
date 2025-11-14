@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { useBusinessProjects } from "@/contexts/BusinessProjectsContext";
 import { 
   ArrowLeft, 
   Eye, 
@@ -46,6 +47,12 @@ interface FormErrors {
 const BusinessSignup = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { clearBusinessProjects } = useBusinessProjects();
+  
+  // Clear projects immediately when component mounts (new signup flow)
+  useEffect(() => {
+    clearBusinessProjects();
+  }, [clearBusinessProjects]);
   
   const [formData, setFormData] = useState<FormData>({
     businessName: "",
@@ -138,7 +145,8 @@ const BusinessSignup = () => {
         submittedAt: new Date().toISOString()
       }));
 
-      // New user - don't set userSignedUp so they see empty stats
+      // New user - clear projects context and don't set userSignedUp so they see empty stats
+      clearBusinessProjects();
       
       navigate("/business-pending-approval", { 
         state: { 

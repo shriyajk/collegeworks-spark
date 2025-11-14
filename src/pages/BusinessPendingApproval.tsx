@@ -3,11 +3,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useBusinessProjects } from "@/contexts/BusinessProjectsContext";
 import { CheckCircle2, Clock, Mail, Building2, AlertTriangle, Loader2 } from "lucide-react";
 
 const BusinessPendingApproval = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { clearBusinessProjects } = useBusinessProjects();
   const { email, businessName } = location.state || {
     email: "business@example.com",
     businessName: "Your Business"
@@ -57,6 +59,9 @@ const BusinessPendingApproval = () => {
               businessName,
               approvedAt: new Date().toISOString()
             }));
+            
+            // Ensure projects are cleared for new business
+            clearBusinessProjects();
             
             navigate("/business-dashboard", { 
               state: { 

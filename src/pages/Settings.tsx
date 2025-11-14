@@ -99,13 +99,6 @@ const Settings = () => {
               <ArrowLeft className="h-4 w-4" />
               Back to Dashboard
             </Button>
-            <Button
-              variant="ghost"
-              onClick={() => navigate("/business-dashboard")}
-              className="gap-2"
-            >
-              Dashboard
-            </Button>
             <div className="border-l pl-3 ml-3">
               <h1 className="text-xl font-bold">Settings</h1>
               <p className="text-sm text-muted-foreground">

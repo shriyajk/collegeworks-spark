@@ -1,6 +1,7 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useHomeConfirmation } from "@/hooks/use-home-confirmation";
+import { useAppliedProjects } from "@/contexts/AppliedProjectsContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -22,6 +23,8 @@ import {
   MessageSquare,
   FileText,
   Search,
+  X,
+  Trash2,
 } from "lucide-react";
 
 interface ProjectApplication {
@@ -127,19 +130,91 @@ const COMPLETED_PROJECTS: CompletedProject[] = [
 
 const Projects = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState("applied");
   const { confirmGoHome, ConfirmationDialog } = useHomeConfirmation();
+  const { appliedProjects: contextAppliedProjects, clearAppliedProjects } = useAppliedProjects();
   
-  // Check if user is signed up (in a real app, this would come from auth context)
-  // For now, we'll check localStorage or default to empty for new users
-  const isSignedUp = localStorage.getItem('userSignedUp') === 'true';
+  // Check if user signed in (not created account) - use localStorage to persist across navigations
+  const fromSignIn = localStorage.getItem('userSignedUp') === 'true';
   
-  // Use empty arrays for new users, mock data for signed up users
-  const appliedProjects = isSignedUp ? APPLIED_PROJECTS : [];
-  const activeProjects = isSignedUp ? ACTIVE_PROJECTS : [];
-  const completedProjects = isSignedUp ? COMPLETED_PROJECTS : [];
+  // Clear applied projects only when a new account is created
+  // We use a flag in localStorage to track if we've already cleared for this session
+  useEffect(() => {
+    const isSignedUp = localStorage.getItem('userSignedUp') === 'true';
+    const hasCampusBuildUser = localStorage.getItem('campusBuildUser');
+    const hasClearedForNewAccount = sessionStorage.getItem('clearedAppliedProjectsForNewAccount');
+    
+    // Only clear if:
+    // 1. User just signed up (has campusBuildUser but no userSignedUp)
+    // 2. We haven't already cleared for this new account session
+    // 3. Context has projects (from a previous session)
+    if (!isSignedUp && hasCampusBuildUser && !hasClearedForNewAccount && contextAppliedProjects.length > 0) {
+      clearAppliedProjects();
+      sessionStorage.setItem('clearedAppliedProjectsForNewAccount', 'true');
+    }
+  }, []); // Only run once on mount
   
-  // Calculate stats based on actual data
+  // For sign-in users, use context directly (already populated with mock data)
+  // For new accounts, use context applied projects (starts as empty array)
+  // Convert context projects to ProjectApplication format
+  const appliedProjects: ProjectApplication[] = contextAppliedProjects.map(ap => {
+    // For sign-in users, use mock data team members for known projects
+    let teamMembers: string[] | undefined = undefined;
+    if (fromSignIn) {
+      if (ap.id === "1") {
+        teamMembers = ["You", "Sarah (Designer)"];
+      } else if (ap.id === "2") {
+        teamMembers = ["You", "Mike (Designer)", "Alex (Backend)"];
+      } else if (ap.id === "3") {
+        teamMembers = ["You", "Emma (Designer)"];
+      }
+    }
+    
+    return {
+      id: ap.id,
+      title: ap.title,
+      company: ap.company || "Client",
+      status: ap.status === "Applied" ? "pending" as const : "accepted" as const,
+      appliedDate: fromSignIn && ["1", "2", "3"].includes(ap.id) 
+        ? (ap.id === "1" ? "2024-01-15" : ap.id === "2" ? "2024-01-10" : "2024-01-05")
+        : new Date().toISOString().split('T')[0],
+      budget: ap.budget || "$0",
+      teamMembers: teamMembers,
+    };
+  });
+  
+  // State for simulated projects (for new accounts)
+  const [simulatedActiveProjects, setSimulatedActiveProjects] = useState<ActiveProject[]>([]);
+  
+  // For sign-in users, show mock data for active and completed projects
+  // For new accounts, all projects start empty (no mock data)
+  const activeProjects: ActiveProject[] = fromSignIn ? ACTIVE_PROJECTS : simulatedActiveProjects;
+  const completedProjects: CompletedProject[] = fromSignIn ? COMPLETED_PROJECTS : [];
+  
+  // Function to simulate an active project
+  const simulateActiveProject = () => {
+    const mockActiveProject: ActiveProject = {
+      id: `sim-active-${Date.now()}`,
+      title: "Coffee Shop Website",
+      company: "Bean There Cafe",
+      progress: 45,
+      deadline: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 2 weeks from now
+      budget: "$250",
+      teamMembers: ["You", "Sarah (Designer)"],
+      nextMilestone: "Complete homepage design",
+      unreadMessages: 2
+    };
+    setSimulatedActiveProjects([mockActiveProject]);
+  };
+  
+  // Function to remove simulated active project
+  const removeSimulatedActiveProject = () => {
+    setSimulatedActiveProjects([]);
+  };
+  
+  // Calculate stats based on actual data - all start at 0 for new accounts
+  // Each time user applies, contextAppliedProjects.length increases, so totalApplied increases
   const totalApplied = appliedProjects.length;
   const totalActive = activeProjects.length;
   const totalCompleted = completedProjects.length;
@@ -178,6 +253,14 @@ const Projects = () => {
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="flex h-14 sm:h-16 items-center justify-between px-3 sm:px-4">
           <div className="flex items-center gap-2 sm:gap-3">
+            <Button
+              variant="ghost"
+              onClick={() => navigate("/feed", { state: { fromMyProjects: true } })}
+              className="gap-1 sm:gap-2 text-purple-600 hover:text-purple-700 hover:bg-purple-50 text-xs sm:text-base px-2 sm:px-4 h-8 sm:h-10"
+            >
+              <Search className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Browse Available Projects</span>
+            </Button>
             <h1 className="text-lg sm:text-2xl font-bold text-primary">My Projects</h1>
           </div>
           <div className="flex items-center gap-1 sm:gap-3">
@@ -213,10 +296,10 @@ const Projects = () => {
       <main className="flex-1 overflow-y-auto px-3 sm:px-4 py-4 sm:py-6">
         <div className="mx-auto max-w-4xl space-y-4 sm:space-y-6">
           
-          {/* Stats & Browse Projects Section */}
+          {/* Stats & Animation Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
             {/* Quick Stats */}
-            <Card className="p-4 sm:p-6 card-enhanced">
+            <Card className="p-4 sm:p-6 shadow-card hover-lift transition-shadow">
               <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Your Progress</h3>
               <div className="grid grid-cols-3 gap-4">
                 <div className="text-center">
@@ -242,29 +325,69 @@ const Projects = () => {
                   <span className="font-semibold text-purple-600">{successRate}%</span>
                 </div>
               </div>
+              
+              {/* Simulate Options - Only show for new accounts */}
+              {!fromSignIn && (
+                <div className="mt-4 pt-4 border-t">
+                  {totalActive === 0 ? (
+                    <>
+                      <p className="text-xs text-gray-500 mb-2 text-center">Demo Option:</p>
+                      <Button
+                        onClick={simulateActiveProject}
+                        variant="outline"
+                        size="sm"
+                        className="w-full text-xs"
+                      >
+                        + Simulate Active Project
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-xs text-gray-500 mb-2 text-center">Demo Project Active:</p>
+                      <Button
+                        onClick={removeSimulatedActiveProject}
+                        variant="outline"
+                        size="sm"
+                        className="w-full text-xs text-red-600 hover:text-red-700 hover:bg-red-50"
+                      >
+                        <Trash2 className="h-3 w-3 mr-1" />
+                        Remove Simulated Project
+                      </Button>
+                    </>
+                  )}
+                </div>
+              )}
             </Card>
 
-            {/* Browse Projects CTA */}
-            <Card className="p-4 sm:p-6 card-enhanced gradient-purple text-white relative overflow-hidden">
-              <div className="relative z-10">
-                <h3 className="text-base sm:text-lg font-semibold mb-2">Find New Projects</h3>
-                <p className="text-white/90 text-sm mb-4">
-                  Discover exciting projects from local businesses
-                </p>
-                <div className="flex items-center gap-2 text-sm text-white/80 mb-4">
-                  <span>• 12 new projects this week</span>
+            {/* Professional Purple Animation */}
+            <Card 
+              className="p-4 sm:p-6 card-enhanced relative overflow-hidden bg-gradient-to-br from-purple-50 via-purple-50/50 to-purple-100/30 border-purple-200/50 cursor-pointer hover:shadow-lg transition-all hover:scale-[1.02]"
+              onClick={() => navigate("/feed", { state: { fromMyProjects: true } })}
+            >
+              <div className="relative z-10 h-full flex flex-col justify-center items-center min-h-[200px]">
+                <div className="relative w-32 h-32 sm:w-40 sm:h-40">
+                  {/* Animated gradient orb */}
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600 opacity-20 animate-pulse"></div>
+                  <div className="absolute inset-2 rounded-full bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 opacity-30 animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+                  
+                  {/* Floating particles */}
+                  <div className="absolute top-1/4 left-1/4 w-3 h-3 bg-purple-400 rounded-full opacity-60 animate-bounce" style={{ animationDelay: '0s', animationDuration: '2s' }}></div>
+                  <div className="absolute top-1/3 right-1/4 w-2 h-2 bg-purple-500 rounded-full opacity-50 animate-bounce" style={{ animationDelay: '0.7s', animationDuration: '2.5s' }}></div>
+                  <div className="absolute bottom-1/4 left-1/3 w-2.5 h-2.5 bg-purple-600 rounded-full opacity-55 animate-bounce" style={{ animationDelay: '1.2s', animationDuration: '2.2s' }}></div>
+                  <div className="absolute bottom-1/3 right-1/3 w-2 h-2 bg-purple-400 rounded-full opacity-60 animate-bounce" style={{ animationDelay: '0.4s', animationDuration: '2.8s' }}></div>
+                  
+                  {/* Central icon */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Briefcase className="h-12 w-12 sm:h-16 sm:w-16 text-purple-600 opacity-80 animate-float-briefcase" />
+                  </div>
                 </div>
-                <Button
-                  onClick={() => navigate("/feed")}
-                  className="w-full bg-white text-purple-600 hover:bg-gray-100 font-semibold"
-                  size="lg"
-                >
-                  <Search className="h-4 w-4 mr-2" />
-                  Browse Available Projects
-                </Button>
+                <p className="mt-4 text-sm sm:text-base text-purple-700 font-medium text-center">
+                  Ready to explore new opportunities?
+                </p>
               </div>
-              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16"></div>
-              <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-12 -translate-x-12"></div>
+              
+              {/* Subtle animated background gradient */}
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-200/20 via-transparent to-purple-300/20"></div>
             </Card>
           </div>
 
@@ -287,30 +410,39 @@ const Projects = () => {
             {/* Applied Projects Tab */}
             <TabsContent value="applied" className="space-y-4">
               {appliedProjects.length === 0 ? (
-                <Card className="p-8 text-center">
+                <Card className="p-8 text-center shadow-card">
                   <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">No Applications Yet</h3>
-                  <p className="text-muted-foreground mb-4">
+                  <h3 className="text-lg font-semibold mb-2">You haven't applied to any projects yet.</h3>
+                  <p className="text-muted-foreground">
                     Start applying to projects to build your portfolio
                   </p>
-                  <Button onClick={() => navigate("/feed")}>
-                    Browse Projects
-                  </Button>
                 </Card>
               ) : (
-                appliedProjects.map((project) => (
-                  <Card key={project.id} className="p-6">
-                    <div className="space-y-4">
-                      <div className="flex items-start justify-between">
-                        <div className="space-y-2">
-                          <h3 className="text-lg font-semibold">{project.title}</h3>
-                          <p className="text-muted-foreground">{project.company}</p>
+                appliedProjects.map((project) => {
+                  // Get level from context if available
+                  const contextProject = contextAppliedProjects.find(ap => ap.id === project.id);
+                  const level = contextProject?.level;
+                  
+                  return (
+                    <Card key={project.id} className="p-6">
+                      <div className="space-y-4">
+                        <div className="flex items-start justify-between">
+                          <div className="space-y-2">
+                            <h3 className="text-lg font-semibold">{project.title}</h3>
+                            <div className="flex items-center gap-2">
+                              {level && (
+                                <Badge variant="outline" className="text-xs">
+                                  {level}
+                                </Badge>
+                              )}
+                              <p className="text-muted-foreground">{project.company}</p>
+                            </div>
+                          </div>
+                          <Badge className={getStatusColor(project.status)}>
+                            {getStatusIcon(project.status)}
+                            <span className="ml-1 capitalize">{project.status}</span>
+                          </Badge>
                         </div>
-                        <Badge className={getStatusColor(project.status)}>
-                          {getStatusIcon(project.status)}
-                          <span className="ml-1 capitalize">{project.status}</span>
-                        </Badge>
-                      </div>
 
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div className="flex items-center gap-2">
@@ -346,35 +478,56 @@ const Projects = () => {
                           </Button>
                         </div>
                       )}
-                    </div>
-                  </Card>
-                ))
+                      </div>
+                    </Card>
+                  );
+                })
               )}
             </TabsContent>
 
             {/* Active Projects Tab */}
             <TabsContent value="active" className="space-y-4">
               {activeProjects.length === 0 ? (
-                <Card className="p-8 text-center">
+                <Card className="p-8 text-center shadow-card">
                   <Briefcase className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
                   <h3 className="text-lg font-semibold mb-2">No Active Projects</h3>
                   <p className="text-muted-foreground mb-4">
                     Your accepted projects will appear here
                   </p>
-                  <Button onClick={() => navigate("/feed")}>
+                  <Button onClick={() => navigate("/feed")} className="w-full sm:w-auto">
                     Find Projects
                   </Button>
                 </Card>
               ) : (
-                activeProjects.map((project) => (
+                activeProjects.map((project) => {
+                  const isSimulated = project.id.startsWith('sim-active');
+                  return (
                   <Card key={project.id} className="p-6">
                     <div className="space-y-4">
                       <div className="flex items-start justify-between">
-                        <div className="space-y-2">
-                          <h3 className="text-lg font-semibold">{project.title}</h3>
+                        <div className="space-y-2 flex-1">
+                          <div className="flex items-center gap-2">
+                            <h3 className="text-lg font-semibold">{project.title}</h3>
+                            {isSimulated && (
+                              <Badge variant="outline" className="text-xs bg-yellow-50 text-yellow-700 border-yellow-200">
+                                Demo
+                              </Badge>
+                            )}
+                          </div>
                           <p className="text-muted-foreground">{project.company}</p>
                         </div>
                         <div className="flex items-center gap-2">
+                          {isSimulated && !fromSignIn && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={removeSimulatedActiveProject}
+                              className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                              title="Remove simulated project"
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          )}
                           <MessageSquare className="h-4 w-4 text-primary" />
                           <Badge variant="secondary">{project.unreadMessages} new</Badge>
                         </div>
@@ -432,14 +585,15 @@ const Projects = () => {
                       </div>
                     </div>
                   </Card>
-                ))
+                  );
+                })
               )}
             </TabsContent>
 
             {/* Completed Projects Tab */}
             <TabsContent value="completed" className="space-y-4">
               {completedProjects.length === 0 ? (
-                <Card className="p-8 text-center">
+                <Card className="p-8 text-center shadow-card">
                   <CheckCircle2 className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
                   <h3 className="text-lg font-semibold mb-2">No Completed Projects</h3>
                   <p className="text-muted-foreground mb-4">
@@ -527,7 +681,7 @@ const Projects = () => {
             variant="ghost"
             size="sm"
             className="flex flex-col gap-1 text-muted-foreground"
-            onClick={() => navigate("/teams")}
+            onClick={() => navigate("/find-teams")}
           >
             <Users className="h-5 w-5" />
             <span className="text-xs">Teams</span>

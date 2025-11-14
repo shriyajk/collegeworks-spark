@@ -1,24 +1,41 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useAppliedProjects } from "@/contexts/AppliedProjectsContext";
+import { useBusinessProjects } from "@/contexts/BusinessProjectsContext";
 import { GraduationCap, Briefcase, Building2, Route, ShieldCheck, TrendingUp } from "lucide-react";
 
 const Landing = () => {
   const navigate = useNavigate();
+  const { clearAppliedProjects } = useAppliedProjects();
+  const { clearBusinessProjects } = useBusinessProjects();
 
   // Clear user signed up status when returning to landing page
   // This simulates a "new user" experience
   const handleStudentSignup = () => {
     localStorage.removeItem("userSignedUp");
+    // Clear applied projects when starting a new signup
+    clearAppliedProjects();
+    sessionStorage.removeItem('clearedAppliedProjectsForNewAccount');
     navigate("/student-signup");
   };
 
   const handleBusinessSignup = () => {
     localStorage.removeItem("userSignedUp");
+    // Clear business projects when starting a new signup
+    clearBusinessProjects();
     navigate("/business-signup");
   };
 
+  const handleStudentSignIn = () => {
+    navigate("/student-signin");
+  };
+
+  const handleBusinessSignIn = () => {
+    navigate("/business-signin");
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-white to-purple-50/30">
+    <div className="min-h-screen bg-gradient-to-b from-white via-white to-purple-50/30 animate-fade-in-up-page">
       <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6 sm:py-16 md:px-8 md:py-20">
         {/* Hero Section */}
         <div className="mb-16 md:mb-20">
@@ -44,7 +61,7 @@ const Landing = () => {
               <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center">
                 <Button
                   onClick={handleStudentSignup}
-                  className="h-12 w-full px-6 text-sm font-semibold shadow-sm transition hover:-translate-y-[1px] hover:shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 sm:h-14 sm:px-8 sm:text-base sm:w-auto"
+                  className="h-12 w-full px-6 text-sm font-semibold bg-gradient-primary text-white shadow-glow-primary button-interactive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 sm:h-14 sm:px-8 sm:text-base sm:w-auto"
                   size="lg"
                 >
                   <GraduationCap className="mr-2 h-4 w-4 sm:mr-3 sm:h-5 sm:w-5" />
@@ -60,6 +77,29 @@ const Landing = () => {
                   <Briefcase className="mr-2 h-4 w-4 sm:mr-3 sm:h-5 sm:w-5" />
                   I'm a Business
                 </Button>
+              </div>
+
+              {/* Sign In Options */}
+              <div className="pt-2 border-t">
+                <p className="text-center text-sm text-slate-600 mb-3">
+                  Already have an account?
+                </p>
+                <div className="flex flex-col gap-2 sm:flex-row sm:justify-center">
+                  <Button
+                    onClick={handleStudentSignIn}
+                    variant="ghost"
+                    className="h-10 text-sm font-medium text-primary hover:text-primary/80 hover:bg-primary/5"
+                  >
+                    Sign in as Student
+                  </Button>
+                  <Button
+                    onClick={handleBusinessSignIn}
+                    variant="ghost"
+                    className="h-10 text-sm font-medium text-primary hover:text-primary/80 hover:bg-primary/5"
+                  >
+                    Sign in as Business
+                  </Button>
+                </div>
               </div>
 
               {/* Feature Points */}
@@ -83,7 +123,7 @@ const Landing = () => {
                 ].map((item) => {
                   const Icon = item.icon;
                   return (
-                    <div key={item.title} className="flex items-start justify-between gap-3 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+                    <div key={item.title} className="flex items-start justify-between gap-3 rounded-lg border border-slate-200 bg-white p-4 shadow-card hover-lift transition-shadow">
                       <div className="flex-1">
                         <p className="text-sm font-semibold text-slate-900">
                           {item.title}
@@ -101,10 +141,10 @@ const Landing = () => {
 
             {/* Right Column: Preview Card (Desktop Only) */}
             <div className="hidden md:block">
-              <div className="mx-auto max-w-sm rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+              <div className="mx-auto max-w-sm rounded-xl border border-slate-200 bg-white p-6 shadow-card hover-lift transition-shadow">
                 <div className="mb-4 flex items-center justify-between">
                   <h3 className="text-lg font-semibold text-slate-900">
-                    Structured Workspaces
+                    How Projects Work
                   </h3>
                   <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
                     In progress
@@ -151,7 +191,7 @@ const Landing = () => {
           <p className="mb-6 text-center text-xs font-medium uppercase tracking-wider text-slate-400">
             Trusted by
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-6 text-sm font-medium text-slate-600 sm:gap-8 md:gap-10">
+          <div className="flex flex-wrap items-center justify-center gap-8 text-sm font-medium text-slate-600 sm:gap-10 md:gap-12">
             <span>BITS Pilani</span>
             <span>IIT Bombay</span>
             <span>EdTechCo</span>

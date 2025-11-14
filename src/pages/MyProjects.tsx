@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
+import { useBusinessProjects, type BusinessProject } from "@/contexts/BusinessProjectsContext";
 import { 
   ArrowLeft,
   Plus,
@@ -20,81 +21,30 @@ import {
   Settings
 } from "lucide-react";
 
-interface Project {
-  id: string;
-  title: string;
-  status: "active" | "review" | "completed" | "draft";
-  budget: number;
-  timeline: string;
-  team?: {
-    name: string;
-    members: number;
-    rating: number;
-  };
-  progress?: number;
-  applications?: number;
-  postedDate: string;
-  dueDate?: string;
-  description: string;
-}
-
-const SAMPLE_PROJECTS: Project[] = [
-  {
-    id: "1",
-    title: "Coffee Shop Website",
-    status: "active",
-    budget: 250,
-    timeline: "2 weeks",
-    team: {
-      name: "Alex + Sarah",
-      members: 2,
-      rating: 4.9
-    },
-    progress: 65,
-    postedDate: "2024-11-10",
-    dueDate: "2024-11-24",
-    description: "Modern responsive website for local coffee shop with online ordering"
-  },
-  {
-    id: "2", 
-    title: "Restaurant Mobile App",
-    status: "review",
-    budget: 450,
-    timeline: "3 weeks",
-    applications: 12,
-    postedDate: "2024-11-08",
-    description: "iOS/Android app for restaurant reservations and menu browsing"
-  },
-  {
-    id: "3",
-    title: "E-commerce Store",
-    status: "completed",
-    budget: 380,
-    timeline: "4 weeks",
-    team: {
-      name: "Mike + Emma + Chen",
-      members: 3,
-      rating: 4.8
-    },
-    progress: 100,
-    postedDate: "2024-10-15",
-    dueDate: "2024-11-12",
-    description: "Full e-commerce platform with payment integration and admin dashboard"
-  },
-  {
-    id: "4",
-    title: "Portfolio Website",
-    status: "draft",
-    budget: 180,
-    timeline: "1 week",
-    postedDate: "2024-11-12",
-    description: "Personal portfolio website for creative professional"
-  }
-];
-
 const MyProjects = () => {
   const navigate = useNavigate();
-  const [projects] = useState(SAMPLE_PROJECTS);
+  const { businessProjects, clearBusinessProjects } = useBusinessProjects();
+  
+  // Ensure new businesses (not signed in) have empty projects initially
+  const isSignedInUser = localStorage.getItem('userSignedUp') === 'true';
+  const hasCampusBuildBusiness = localStorage.getItem('campusBuildBusiness');
+  
+  // Clear projects on mount ONLY if it's a new business AND projects contain mock data IDs
+  // (This prevents clearing newly posted projects)
+  useEffect(() => {
+    if (!isSignedInUser && hasCampusBuildBusiness && businessProjects.length > 0) {
+      // Only clear if projects have mock data IDs (from previous sign-in session)
+      // Mock data IDs are "1", "2", "3", "4"
+      const hasMockData = businessProjects.some(p => ["1", "2", "3", "4"].includes(p.id));
+      if (hasMockData) {
+        clearBusinessProjects();
+      }
+    }
+  }, []); // Only run once on mount
+  
+  // Use projects directly from context - they should be empty for new businesses initially
+  // and populated when they post projects
+  const projects: BusinessProject[] = businessProjects;
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -126,7 +76,7 @@ const MyProjects = () => {
     }
   };
 
-  const ProjectCard = ({ project }: { project: Project }) => (
+  const ProjectCard = ({ project }: { project: BusinessProject }) => (
     <Card className="p-4 sm:p-6 hover:shadow-md transition-shadow">
       <div className="space-y-3 sm:space-y-4">
         {/* Header */}
@@ -250,13 +200,6 @@ const MyProjects = () => {
               <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4" />
               <span className="hidden sm:inline">Back to Dashboard</span>
             </Button>
-            <Button
-              variant="ghost"
-              onClick={() => navigate("/business-dashboard")}
-              className="gap-1 sm:gap-2 text-xs sm:text-base px-2 sm:px-4 h-8 sm:h-10 hidden md:flex"
-            >
-              Dashboard
-            </Button>
             <div className="border-l pl-2 sm:pl-3 ml-1 sm:ml-3">
               <h1 className="text-sm sm:text-xl font-bold truncate">My Projects</h1>
               <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">
@@ -332,45 +275,66 @@ const MyProjects = () => {
           </div>
 
           {/* Projects Tabs */}
-          <Tabs defaultValue="all" className="space-y-4 sm:space-y-6">
-            <TabsList className="grid w-full grid-cols-5 h-auto">
-              <TabsTrigger value="all" className="text-xs sm:text-sm px-1 sm:px-3 py-2">All</TabsTrigger>
-              <TabsTrigger value="active" className="text-xs sm:text-sm px-1 sm:px-3 py-2">Active</TabsTrigger>
-              <TabsTrigger value="review" className="text-xs sm:text-sm px-1 sm:px-3 py-2">Review</TabsTrigger>
-              <TabsTrigger value="completed" className="text-xs sm:text-sm px-1 sm:px-3 py-2">Done</TabsTrigger>
-              <TabsTrigger value="draft" className="text-xs sm:text-sm px-1 sm:px-3 py-2">Drafts</TabsTrigger>
-            </TabsList>
+          {projects.length === 0 ? (
+            <Card className="p-8 sm:p-12 text-center">
+              <div className="max-w-md mx-auto space-y-4">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center mx-auto">
+                  <BarChart3 className="h-8 w-8 sm:h-10 sm:w-10 text-gray-400" />
+                </div>
+                <h3 className="text-lg sm:text-xl font-bold text-gray-900">No projects yet</h3>
+                <p className="text-sm sm:text-base text-gray-600">
+                  Start by posting your first project to connect with talented student teams
+                </p>
+                <Button 
+                  onClick={() => navigate("/post-project")}
+                  className="mt-4"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Post Your First Project
+                </Button>
+              </div>
+            </Card>
+          ) : (
+            <Tabs defaultValue="all" className="space-y-4 sm:space-y-6">
+              <TabsList className="grid w-full grid-cols-5 h-auto">
+                <TabsTrigger value="all" className="text-xs sm:text-sm px-1 sm:px-3 py-2">All</TabsTrigger>
+                <TabsTrigger value="active" className="text-xs sm:text-sm px-1 sm:px-3 py-2">Active</TabsTrigger>
+                <TabsTrigger value="review" className="text-xs sm:text-sm px-1 sm:px-3 py-2">Review</TabsTrigger>
+                <TabsTrigger value="completed" className="text-xs sm:text-sm px-1 sm:px-3 py-2">Done</TabsTrigger>
+                <TabsTrigger value="draft" className="text-xs sm:text-sm px-1 sm:px-3 py-2">Drafts</TabsTrigger>
+              </TabsList>
 
-            <TabsContent value="all" className="space-y-3 sm:space-y-4">
-              {projects.map(project => (
-                <ProjectCard key={project.id} project={project} />
-              ))}
-            </TabsContent>
+              <TabsContent value="all" className="space-y-3 sm:space-y-4">
+                {projects.map(project => (
+                  <ProjectCard key={project.id} project={project} />
+                ))}
+              </TabsContent>
 
-            <TabsContent value="active" className="space-y-3 sm:space-y-4">
-              {filterProjects("active").map(project => (
-                <ProjectCard key={project.id} project={project} />
-              ))}
-            </TabsContent>
+              <TabsContent value="active" className="space-y-3 sm:space-y-4">
+                {filterProjects("active").map(project => (
+                  <ProjectCard key={project.id} project={project} />
+                ))}
+              </TabsContent>
 
-            <TabsContent value="review" className="space-y-3 sm:space-y-4">
-              {filterProjects("review").map(project => (
-                <ProjectCard key={project.id} project={project} />
-              ))}
-            </TabsContent>
+              <TabsContent value="review" className="space-y-3 sm:space-y-4">
+                {filterProjects("review").map(project => (
+                  <ProjectCard key={project.id} project={project} />
+                ))}
+              </TabsContent>
 
-            <TabsContent value="completed" className="space-y-3 sm:space-y-4">
-              {filterProjects("completed").map(project => (
-                <ProjectCard key={project.id} project={project} />
-              ))}
-            </TabsContent>
+              <TabsContent value="completed" className="space-y-3 sm:space-y-4">
+                {filterProjects("completed").map(project => (
+                  <ProjectCard key={project.id} project={project} />
+                ))}
+              </TabsContent>
 
-            <TabsContent value="draft" className="space-y-3 sm:space-y-4">
-              {filterProjects("draft").map(project => (
-                <ProjectCard key={project.id} project={project} />
-              ))}
-            </TabsContent>
-          </Tabs>
+              <TabsContent value="draft" className="space-y-3 sm:space-y-4">
+                {filterProjects("draft").map(project => (
+                  <ProjectCard key={project.id} project={project} />
+                ))}
+              </TabsContent>
+            </Tabs>
+          )}
         </div>
       </main>
     </div>

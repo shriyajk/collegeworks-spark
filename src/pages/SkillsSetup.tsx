@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useHomeConfirmation } from "@/hooks/use-home-confirmation";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Plus, X } from "lucide-react";
+import { Plus, X, ArrowLeft, Home } from "lucide-react";
 
 const SKILL_OPTIONS = [
   "Frontend",
@@ -33,10 +34,25 @@ const AVAILABILITY_OPTIONS = [
 
 const SkillsSetup = () => {
   const navigate = useNavigate();
+  const { confirmGoHome, ConfirmationDialog } = useHomeConfirmation();
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [selectedAvailability, setSelectedAvailability] = useState("");
   const [customSkill, setCustomSkill] = useState("");
   const [customSkills, setCustomSkills] = useState<string[]>([]);
+
+  // Load saved skills and availability from localStorage on mount
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem("campusBuildUser") || "{}");
+    if (userData.skills && Array.isArray(userData.skills)) {
+      setSelectedSkills(userData.skills);
+    }
+    if (userData.customSkills && Array.isArray(userData.customSkills)) {
+      setCustomSkills(userData.customSkills);
+    }
+    if (userData.availability) {
+      setSelectedAvailability(userData.availability);
+    }
+  }, []);
 
   const toggleSkill = (skill: string) => {
     setSelectedSkills((prev) =>
@@ -121,14 +137,38 @@ const SkillsSetup = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-background px-4 py-8">
-      <div className="mx-auto w-full max-w-2xl space-y-8">
-        <div className="space-y-2 text-center">
-          <h1 className="text-3xl font-bold text-primary">Set Up Your Profile</h1>
-          <p className="text-muted-foreground">
-            Tell us about your skills and availability
-          </p>
+    <div className="flex min-h-screen flex-col bg-background">
+      {/* Header with Back Button */}
+      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="flex h-16 items-center justify-between px-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate("/student-signup")}
+            className="gap-2 text-gray-600 hover:text-gray-700 hover:bg-gray-50"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={confirmGoHome}
+            className="gap-1 sm:gap-2 text-gray-600 hover:text-gray-700 hover:bg-gray-50 text-xs sm:text-base px-2 sm:px-4 h-8 sm:h-10"
+          >
+            <Home className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Home</span>
+          </Button>
         </div>
+      </header>
+
+      <div className="flex-1 px-4 py-8">
+        <div className="mx-auto w-full max-w-2xl space-y-8">
+          <div className="space-y-2 text-center">
+            <h1 className="text-3xl font-bold text-primary">Set Up Your Profile</h1>
+            <p className="text-muted-foreground">
+              Tell us about your skills and availability
+            </p>
+          </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
           <div className="space-y-6">
@@ -264,7 +304,10 @@ const SkillsSetup = () => {
             Complete Setup
           </Button>
         </form>
+        </div>
       </div>
+      
+      <ConfirmationDialog />
     </div>
   );
 };

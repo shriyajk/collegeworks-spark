@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useAppliedProjects } from "@/contexts/AppliedProjectsContext";
+import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -87,6 +89,7 @@ const DEFAULT_PROJECT = {
 const TeamFormation = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { addAppliedProject, appliedProjects } = useAppliedProjects();
   // Use project from location state or default project for direct navigation
   const project = location.state?.project || DEFAULT_PROJECT;
   
@@ -135,7 +138,49 @@ const TeamFormation = () => {
 
   const handleApplyAsTeam = () => {
     if (isTeamComplete) {
-      navigate("/application-sent", { state: { project, teamMembers } });
+      // Check if user has already applied to this project
+      // Check by project title and company to detect duplicates
+      const hasAlreadyApplied = appliedProjects.some(
+        ap => ap.title === project.title && ap.company === project.company
+      );
+      
+      if (hasAlreadyApplied) {
+        toast.error("You have already applied to this project");
+        return;
+      }
+      
+      // Add project to applied projects
+      const levelMap: Record<string, "Beginner" | "Intermediate" | "Advanced"> = {
+        beginner: "Beginner",
+        intermediate: "Intermediate",
+        advanced: "Advanced",
+      };
+      
+      // Generate a unique application ID to allow multiple applications to the same project
+      // Format: projectId-timestamp to ensure uniqueness
+      const uniqueApplicationId = `${project.id}-${Date.now()}`;
+      
+      const projectToAdd = {
+        id: uniqueApplicationId,
+        title: project.title,
+        level: levelMap[project.level] || "Beginner",
+        status: "Applied" as const,
+        company: project.company,
+        budget: project.budget,
+      };
+      
+      addAppliedProject(projectToAdd);
+      toast.success("Application submitted successfully!");
+      
+      // Small delay to ensure context update completes before navigation
+      setTimeout(() => {
+        // Navigate to My Projects page
+        // Preserve fromSignIn flag if user came from sign in flow
+        const isSignedInUser = localStorage.getItem('userSignedUp') === 'true';
+        navigate("/projects", { 
+          state: { fromSignIn: isSignedInUser } 
+        });
+      }, 100);
     }
   };
 
@@ -146,18 +191,23 @@ const TeamFormation = () => {
         <div className="flex h-16 items-center justify-between px-4">
           <Button
             variant="ghost"
-            size="icon"
+            size="sm"
             onClick={() => {
-              // If we have project state from navigation, go back to project detail
-              // Otherwise, go back to feed
-              if (location.state?.project) {
+              // If came from Find Teams page (via bottom panel), go back to Find Teams
+              if (location.state?.fromFindTeams) {
+                navigate("/find-teams");
+              } else if (location.state?.project) {
+                // Otherwise, go back to project detail if we have project state
                 navigate(`/project/${project.id}`, { state: { project } });
               } else {
+                // Fallback to feed
                 navigate("/feed");
               }
             }}
+            className="gap-2 text-gray-600 hover:text-gray-700 hover:bg-gray-50"
           >
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className="h-4 w-4" />
+            Back
           </Button>
           <h1 className="text-lg font-semibold">Team for: {project.title}</h1>
           <div className="w-10" /> {/* Spacer for centering */}

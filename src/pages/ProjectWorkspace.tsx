@@ -215,10 +215,12 @@ const ProjectWorkspace = () => {
         <div className="flex h-16 items-center justify-between px-4">
           <Button
             variant="ghost"
-            size="icon"
+            size="sm"
             onClick={() => navigate("/projects")}
+            className="gap-2 text-gray-600 hover:text-gray-700 hover:bg-gray-50"
           >
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className="h-4 w-4" />
+            Back
           </Button>
           <h1 className="text-lg font-semibold">{project.title}</h1>
           <div className="w-10" /> {/* Spacer for centering */}

@@ -176,7 +176,7 @@ const ApplicationSent = () => {
             variant="ghost"
             size="sm"
             className="flex flex-col gap-1 text-muted-foreground"
-            onClick={() => navigate("/teams")}
+            onClick={() => navigate("/find-teams")}
           >
             <Users className="h-5 w-5" />
             <span className="text-xs">Teams</span>

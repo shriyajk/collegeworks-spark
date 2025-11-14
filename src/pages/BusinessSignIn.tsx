@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
+import { useBusinessProjects } from "@/contexts/BusinessProjectsContext";
 import { 
   ArrowLeft,
   Building2,
@@ -16,6 +17,7 @@ import {
 
 const BusinessSignIn = () => {
   const navigate = useNavigate();
+  const { populateMockDataForSignIn } = useBusinessProjects();
   
   const [formData, setFormData] = useState({
     email: "",
@@ -78,6 +80,9 @@ const BusinessSignIn = () => {
       
       // Mark as existing user with data
       localStorage.setItem('userSignedUp', 'true');
+      
+      // Populate mock data for returning user
+      populateMockDataForSignIn();
       
       // Navigate to dashboard
       navigate("/business-dashboard", { 

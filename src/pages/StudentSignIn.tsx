@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAppliedProjects } from "@/contexts/AppliedProjectsContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,6 +17,7 @@ import {
 
 const StudentSignIn = () => {
   const navigate = useNavigate();
+  const { populateMockDataForSignIn } = useAppliedProjects();
   
   const [formData, setFormData] = useState({
     email: "",
@@ -79,9 +81,12 @@ const StudentSignIn = () => {
       // Mark as existing user with data
       localStorage.setItem('userSignedUp', 'true');
       
+      // Populate mock data for returning user
+      populateMockDataForSignIn();
+      
       // Navigate to projects page (showing applied, progress, completed)
       navigate("/projects", { 
-        state: studentData
+        state: { ...studentData, fromSignIn: true }
       });
       
     } catch (error) {

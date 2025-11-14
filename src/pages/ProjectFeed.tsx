@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useHomeConfirmation } from "@/hooks/use-home-confirmation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Bell, User, Home, Users, Briefcase, BarChart, FolderOpen } from "lucide-react";
+import { Bell, User, Home, Users, Briefcase, BarChart, FolderOpen, ArrowLeft } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -26,6 +26,7 @@ interface Project {
 }
 
 const PROJECTS: Project[] = [
+  // Beginner Projects
   {
     id: "1",
     level: "beginner",
@@ -38,6 +39,51 @@ const PROJECTS: Project[] = [
     viewingCount: 12,
   },
   {
+    id: "3",
+    level: "beginner",
+    title: "Campus Club Website",
+    company: "IEEE Club",
+    rating: 5.0,
+    budget: "$200",
+    duration: "2 weeks",
+    skills: ["Frontend", "CSS"],
+    viewingCount: 15,
+  },
+  {
+    id: "4",
+    level: "beginner",
+    title: "Local Bakery Landing Page",
+    company: "Sweet Treats Bakery",
+    rating: 4.6,
+    budget: "$180",
+    duration: "1.5 weeks",
+    skills: ["Frontend", "Design"],
+    viewingCount: 9,
+  },
+  {
+    id: "5",
+    level: "beginner",
+    title: "Portfolio Website",
+    company: "Freelance Photographer",
+    rating: 4.9,
+    budget: "$150",
+    duration: "1 week",
+    skills: ["Frontend", "HTML"],
+    viewingCount: 22,
+  },
+  {
+    id: "6",
+    level: "beginner",
+    title: "Event Registration Form",
+    company: "Community Center",
+    rating: 4.7,
+    budget: "$120",
+    duration: "1 week",
+    skills: ["Frontend", "Forms"],
+    viewingCount: 18,
+  },
+  // Intermediate Projects
+  {
     id: "2",
     level: "intermediate",
     title: "Student Startup MVP",
@@ -49,22 +95,130 @@ const PROJECTS: Project[] = [
     viewingCount: 8,
   },
   {
-    id: "3",
-    level: "beginner",
-    title: "Campus Club Website",
-    company: "IEEE Club",
+    id: "7",
+    level: "intermediate",
+    title: "E-commerce Product Catalog",
+    company: "Local Retail Store",
+    rating: 4.8,
+    budget: "$600",
+    duration: "4 weeks",
+    skills: ["Full Stack", "Database"],
+    viewingCount: 14,
+  },
+  {
+    id: "8",
+    level: "intermediate",
+    title: "Task Management App",
+    company: "Small Business Solutions",
+    rating: 4.9,
+    budget: "$550",
+    duration: "3.5 weeks",
+    skills: ["Full Stack", "API"],
+    viewingCount: 11,
+  },
+  {
+    id: "9",
+    level: "intermediate",
+    title: "Restaurant Ordering System",
+    company: "DineIn Restaurant",
+    rating: 4.7,
+    budget: "$500",
+    duration: "3 weeks",
+    skills: ["Backend", "Frontend"],
+    viewingCount: 16,
+  },
+  {
+    id: "10",
+    level: "intermediate",
+    title: "Social Media Dashboard",
+    company: "Marketing Agency",
+    rating: 4.6,
+    budget: "$650",
+    duration: "4 weeks",
+    skills: ["Full Stack", "API Integration"],
+    viewingCount: 13,
+  },
+  {
+    id: "11",
+    level: "intermediate",
+    title: "Learning Management System",
+    company: "Online Education Platform",
+    rating: 4.8,
+    budget: "$700",
+    duration: "5 weeks",
+    skills: ["Full Stack", "Database"],
+    viewingCount: 10,
+  },
+  // Advanced Projects
+  {
+    id: "12",
+    level: "advanced",
+    title: "Real-time Chat Application",
+    company: "Tech Startup",
+    rating: 4.9,
+    budget: "$1200",
+    duration: "6 weeks",
+    skills: ["Full Stack", "WebSockets", "Real-time"],
+    viewingCount: 7,
+  },
+  {
+    id: "13",
+    level: "advanced",
+    title: "AI-Powered Analytics Platform",
+    company: "Data Solutions Inc",
     rating: 5.0,
-    budget: "$200",
-    duration: "2 weeks",
-    skills: ["Frontend", "CSS"],
-    viewingCount: 15,
+    budget: "$1500",
+    duration: "8 weeks",
+    skills: ["Full Stack", "AI/ML", "Data Visualization"],
+    viewingCount: 5,
+  },
+  {
+    id: "14",
+    level: "advanced",
+    title: "Blockchain Voting System",
+    company: "SecureVote Technologies",
+    rating: 4.8,
+    budget: "$1800",
+    duration: "10 weeks",
+    skills: ["Blockchain", "Full Stack", "Security"],
+    viewingCount: 4,
+  },
+  {
+    id: "15",
+    level: "advanced",
+    title: "Microservices E-commerce Platform",
+    company: "Enterprise Retail",
+    rating: 4.9,
+    budget: "$2000",
+    duration: "12 weeks",
+    skills: ["Microservices", "Cloud", "Full Stack"],
+    viewingCount: 6,
   },
 ];
 
 const ProjectFeed = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { confirmGoHome, ConfirmationDialog } = useHomeConfirmation();
   const [activeFilter, setActiveFilter] = useState<string>("all");
+  
+  // Check if user came from My Projects
+  const fromMyProjects = location.state?.fromMyProjects === true;
+  // Check if user signed in (not created account)
+  const isSignedInUser = localStorage.getItem('userSignedUp') === 'true';
+  
+  // Determine back navigation:
+  // - If signed in user → always go to Sign In page (sign in flow: All Projects → Sign In)
+  // - If in create account flow → go to skills setup
+  // - Otherwise → go to skills setup (default for new accounts)
+  const getBackNavigation = () => {
+    if (isSignedInUser) {
+      // Sign in flow: All Projects → Sign In (always, regardless of where they came from)
+      return "/student-signin";
+    }
+    // Create account flow: All Projects → Set up your profile
+    return "/skills-setup";
+  };
 
   const filteredProjects = PROJECTS.filter((project) =>
     activeFilter === "all" ? true : project.level === activeFilter
@@ -102,6 +256,15 @@ const ProjectFeed = () => {
       <header className="sticky top-0 z-50 border-b glass backdrop-blur-md border-white/20">
         <div className="flex h-14 sm:h-16 items-center justify-between px-3 sm:px-4">
           <div className="flex items-center gap-1 sm:gap-3 overflow-hidden">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate(getBackNavigation())}
+              className="gap-2 text-gray-600 hover:text-gray-700 hover:bg-gray-50"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back
+            </Button>
             <Button
               variant="ghost"
               onClick={() => navigate("/projects")}
@@ -298,7 +461,7 @@ const ProjectFeed = () => {
             variant="ghost"
             size="sm"
             className="flex flex-col gap-1 text-muted-foreground"
-            onClick={() => navigate("/teams")}
+            onClick={() => navigate("/find-teams")}
           >
             <Users className="h-5 w-5" />
             <span className="text-xs">Teams</span>

@@ -45,6 +45,12 @@ const ProjectCompletion = () => {
     yourShare: 125
   };
 
+  // Ensure numeric values with fallbacks
+  const totalAmount = typeof project.totalAmount === 'number' ? project.totalAmount : 
+                      typeof project.totalAmount === 'string' ? parseFloat(project.totalAmount) || 250 : 250;
+  const yourShare = typeof project.yourShare === 'number' ? project.yourShare : 
+                    typeof project.yourShare === 'string' ? parseFloat(project.yourShare) || (totalAmount / 2) : (totalAmount / 2);
+
   // Animation states
   const [showConfetti, setShowConfetti] = useState(false);
   const [animatedAmount, setAnimatedAmount] = useState(0);
@@ -75,7 +81,7 @@ const ProjectCompletion = () => {
       // Animate money count-up
       setTimeout(() => {
         let current = 0;
-        const target = project.yourShare;
+        const target = yourShare;
         const increment = target / 30; // 30 steps
         const countUp = setInterval(() => {
           current += increment;
@@ -83,7 +89,7 @@ const ProjectCompletion = () => {
             setAnimatedAmount(target);
             clearInterval(countUp);
           } else {
-            setAnimatedAmount(Math.floor(current));
+            setAnimatedAmount(Math.round(current * 100) / 100); // Round to 2 decimals
           }
         }, 50);
       }, 500),
@@ -105,7 +111,7 @@ const ProjectCompletion = () => {
     ];
 
     return () => timers.forEach(clearTimeout);
-  }, [project.yourShare]);
+  }, [yourShare]);
 
   const handleStarClick = (starIndex: number) => {
     setRating(starIndex + 1);
@@ -130,7 +136,7 @@ const ProjectCompletion = () => {
 
   const handleShareAchievement = () => {
     // Share to LinkedIn or social media
-    const shareText = `Just completed my first project on CampusBuild! Built a ${project.title} for ${project.company} and earned $${project.yourShare}. Leveled up my React skills! 🚀`;
+    const shareText = `Just completed my first project on CampusBuild! Built a ${project.title} for ${project.company} and earned $${yourShare.toFixed(2)}. Leveled up my React skills! 🚀`;
     
     if (navigator.share) {
       navigator.share({
@@ -147,20 +153,49 @@ const ProjectCompletion = () => {
 
   return (
     <div className="flex min-h-screen flex-col bg-background relative overflow-hidden">
-      {/* Confetti Animation */}
+      {/* Enhanced Confetti Animation */}
       {showConfetti && (
-        <div className="fixed inset-0 pointer-events-none z-50">
-          <div className="absolute inset-0 bg-gradient-to-b from-yellow-100/20 to-transparent animate-pulse" />
-          {/* Simple confetti effect with CSS */}
+        <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-b from-yellow-100/20 via-purple-100/10 to-transparent animate-pulse" />
+          {/* Enhanced confetti effect */}
           <div className="confetti-container">
-            {[...Array(20)].map((_, i) => (
+            {[...Array(50)].map((_, i) => {
+              const colors = ['bg-purple-500', 'bg-blue-500', 'bg-pink-500', 'bg-yellow-500', 'bg-green-500', 'bg-indigo-500'];
+              const shapes = ['rounded-full', 'rounded-sm', 'rounded-none'];
+              const color = colors[i % colors.length];
+              const shape = shapes[i % shapes.length];
+              const size = Math.random() * 8 + 4; // 4-12px
+              const startX = Math.random() * 100;
+              const duration = 3 + Math.random() * 2; // 3-5s
+              const delay = Math.random() * 0.5;
+              
+              return (
+                <div
+                  key={i}
+                  className={`absolute ${color} ${shape} animate-confetti-fall`}
+                  style={{
+                    left: `${startX}%`,
+                    width: `${size}px`,
+                    height: `${size}px`,
+                    animationDelay: `${delay}s`,
+                    animationDuration: `${duration}s`,
+                    opacity: 0.8
+                  }}
+                />
+              );
+            })}
+          </div>
+          {/* Sparkle effects */}
+          <div className="absolute inset-0">
+            {[...Array(15)].map((_, i) => (
               <div
-                key={i}
-                className={`absolute w-2 h-2 bg-primary rounded animate-bounce`}
+                key={`sparkle-${i}`}
+                className="absolute w-1 h-1 bg-yellow-400 rounded-full animate-ping"
                 style={{
                   left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
                   animationDelay: `${Math.random() * 2}s`,
-                  animationDuration: `${2 + Math.random() * 2}s`
+                  animationDuration: `${1 + Math.random()}s`
                 }}
               />
             ))}
@@ -192,10 +227,10 @@ const ProjectCompletion = () => {
               
               <div className="space-y-2">
                 <div className="text-4xl font-bold text-success">
-                  ${animatedAmount}
+                  ${typeof animatedAmount === 'number' ? animatedAmount.toFixed(2) : '0.00'}
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  (Your share: ${project.totalAmount} ÷ 2)
+                  (Your share: ${totalAmount.toFixed(2)} ÷ 2)
                 </p>
                 <Badge variant="secondary" className="bg-success/10 text-success">
                   Available in wallet
@@ -354,7 +389,7 @@ const ProjectCompletion = () => {
           <div className="space-y-3">
             <Button
               onClick={handleAddToPortfolio}
-              className="w-full h-12 text-lg font-semibold bg-primary hover:bg-primary/90"
+              className="w-full h-12 text-lg font-semibold bg-gradient-primary text-white shadow-glow-primary button-interactive"
               size="lg"
             >
               Add to Portfolio
@@ -398,7 +433,7 @@ const ProjectCompletion = () => {
             variant="ghost"
             size="sm"
             className="flex flex-col gap-1 text-muted-foreground"
-            onClick={() => navigate("/teams")}
+            onClick={() => navigate("/find-teams")}
           >
             <Users className="h-5 w-5" />
             <span className="text-xs">Teams</span>

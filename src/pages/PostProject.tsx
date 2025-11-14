@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { Separator } from "@/components/ui/separator";
+import { useBusinessProjects } from "@/contexts/BusinessProjectsContext";
 import { 
   ArrowLeft,
   DollarSign,
@@ -59,6 +60,11 @@ const DIFFICULTY_OPTIONS = [
 
 const PostProject = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { addBusinessProject } = useBusinessProjects();
+  
+  const projectToEdit = location.state?.project;
+  const isEditing = location.state?.isEditing || false;
   
   const [formData, setFormData] = useState<ProjectData>({
     title: "",
@@ -74,6 +80,29 @@ const PostProject = () => {
   const [errors, setErrors] = useState<{[key: string]: string}>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [suggestedDifficulty, setSuggestedDifficulty] = useState<string | null>(null);
+
+  // Load project data when editing
+  useEffect(() => {
+    if (isEditing && projectToEdit) {
+      // Handle budget - it might be a string or number
+      let budgetValue = "";
+      if (projectToEdit.budget) {
+        budgetValue = typeof projectToEdit.budget === 'string' 
+          ? projectToEdit.budget 
+          : projectToEdit.budget.toString();
+      }
+      
+      setFormData({
+        title: projectToEdit.title || "",
+        description: projectToEdit.description || "",
+        budget: budgetValue,
+        timeline: projectToEdit.timeline || "1-2 weeks",
+        skills: Array.isArray(projectToEdit.skills) ? projectToEdit.skills : [],
+        teamSize: Array.isArray(projectToEdit.teamSize) ? projectToEdit.teamSize : [3],
+        difficulty: projectToEdit.difficulty || "beginner"
+      });
+    }
+  }, [isEditing, projectToEdit]);
 
   // Auto-suggest difficulty based on description keywords
   useEffect(() => {
@@ -152,10 +181,13 @@ const PostProject = () => {
       // Simulate payment processing
       await new Promise(resolve => setTimeout(resolve, 2000));
       
+      const projectId = Date.now().toString();
+      const postedDate = new Date().toISOString().split('T')[0];
+      
       // Store project data
       const projectData = {
         ...formData,
-        id: Date.now().toString(),
+        id: projectId,
         status: "under_review",
         submittedAt: new Date().toISOString(),
         postingFee: 10,
@@ -163,6 +195,20 @@ const PostProject = () => {
       };
       
       localStorage.setItem("postedProject", JSON.stringify(projectData));
+      
+      // Add to business projects context
+      const businessProject = {
+        id: projectId,
+        title: formData.title,
+        status: "review" as const, // "under_review" maps to "review"
+        budget: parseFloat(formData.budget) || 0,
+        timeline: formData.timeline,
+        postedDate: postedDate,
+        description: formData.description,
+        applications: 0, // Will be updated when applications come in
+      };
+      
+      addBusinessProject(businessProject);
       
       navigate("/waiting-for-applications", { state: { project: projectData } });
     } catch (error) {
@@ -205,7 +251,9 @@ const PostProject = () => {
             <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
               <Target className="h-8 w-8 text-blue-600" />
             </div>
-            <h1 className="text-3xl font-bold text-foreground">Post a Project</h1>
+            <h1 className="text-3xl font-bold text-foreground">
+              {isEditing ? "Edit Project" : "Post a Project"}
+            </h1>
             <p className="text-muted-foreground">
               Connect with talented student teams
             </p>
@@ -564,7 +612,7 @@ const PostProject = () => {
               ) : (
                 <div className="flex items-center gap-2">
                   <Lock className="h-4 w-4" />
-                  Pay & Post Project
+                  {isEditing ? "Update Project" : "Pay & Post Project"}
                 </div>
               )}
             </Button>
