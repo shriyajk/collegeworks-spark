@@ -392,7 +392,7 @@ const ProjectFeed = () => {
                   }}
                   variant="default"
                   size="sm"
-                  className="bg-gradient-primary hover:bg-gradient-primary-hover text-white shadow-sm hover:shadow-md transition-all w-full sm:w-auto"
+                  className="bg-primary/20 hover:bg-primary/30 text-primary border border-primary/30 shadow-card hover:shadow-card-hover transition-all w-full sm:w-auto"
                 >
                   View →
                 </Button>
