@@ -93,25 +93,25 @@ const BusinessPendingApproval = () => {
         <div className="w-full max-w-md space-y-8 text-center">
           
           {/* PROMINENT Demo Controls - Moved to Top */}
-          <Card className="p-6 border-4 border-green-500 bg-gradient-to-r from-green-50 to-emerald-50 shadow-2xl">
-            <div className="space-y-4">
+          <Card className="p-4 border-2 border-green-500 bg-gradient-to-r from-green-50 to-emerald-50 shadow-lg">
+            <div className="space-y-3">
               <div className="flex items-center justify-center gap-2">
-                <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                  <CheckCircle2 className="h-5 w-5 text-white" />
+                <div className="w-7 h-7 bg-green-500 rounded-full flex items-center justify-center">
+                  <CheckCircle2 className="h-4 w-4 text-white" />
                 </div>
-                <h3 className="text-xl font-bold text-green-900">⚡ Demo Mode - Skip Waiting</h3>
+                <h3 className="text-lg font-bold text-green-900">⚡ Demo Mode - Skip Waiting</h3>
               </div>
               
-              <p className="text-green-800 font-medium">
+              <p className="text-sm text-green-800 font-medium">
                 For evaluation: Simulate instant business approval
               </p>
 
               {/* Simulation Loading */}
               {isSimulating && (
-                <Card className="p-4 bg-blue-50 border-blue-200">
-                  <div className="flex items-center justify-center gap-3">
-                    <Loader2 className="h-5 w-5 text-blue-600 animate-spin" />
-                    <span className="text-lg font-medium text-blue-900">
+                <Card className="p-3 bg-blue-50 border-blue-200">
+                  <div className="flex items-center justify-center gap-2">
+                    <Loader2 className="h-4 w-4 text-blue-600 animate-spin" />
+                    <span className="text-base font-medium text-blue-900">
                       {simulationSteps[simulationStep]}
                     </span>
                   </div>
@@ -122,9 +122,9 @@ const BusinessPendingApproval = () => {
               {!isSimulating && (
                 <Button
                   onClick={handleSimulateApproval}
-                  className="w-full h-14 text-xl font-bold bg-green-600 hover:bg-green-700 text-white shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all"
+                  className="w-full h-12 text-lg font-bold bg-green-600 hover:bg-green-700 text-white shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all"
                 >
-                  ✅ SIMULATE APPROVAL NOW
+                  SIMULATE APPROVAL NOW
                 </Button>
               )}
             </div>
@@ -227,28 +227,6 @@ const BusinessPendingApproval = () => {
               <span className="font-medium text-foreground">{email}</span> when approved.
             </p>
           </div>
-
-          {/* Demo Next Button */}
-          <Card className="p-4 bg-amber-50 border-amber-200">
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <div className="w-6 h-6 bg-amber-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">!</span>
-                </div>
-                <h4 className="font-medium text-amber-900">Demo Purposes Only</h4>
-              </div>
-              <p className="text-sm text-amber-800">
-                Skip the waiting period and proceed directly to the business dashboard to start adding projects.
-              </p>
-              <Button
-                onClick={() => navigate("/business-dashboard")}
-                className="w-full h-12 text-lg font-semibold bg-amber-600 hover:bg-amber-700 text-white"
-                size="lg"
-              >
-                Next: Go to Dashboard →
-              </Button>
-            </div>
-          </Card>
 
           {/* Action Buttons */}
           <div className="space-y-3">

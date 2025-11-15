@@ -209,12 +209,17 @@ const ProjectFeed = () => {
   const isSignedInUser = localStorage.getItem('userSignedUp') === 'true';
   
   // Determine back navigation:
-  // - If signed in user → always go to Sign In page (sign in flow: All Projects → Sign In)
+  // - If coming from My Projects → go back to My Projects
+  // - If signed in user → go to Sign In page (sign in flow: All Projects → Sign In)
   // - If in create account flow → go to skills setup
   // - Otherwise → go to skills setup (default for new accounts)
   const getBackNavigation = () => {
+    // Check if user came from My Projects
+    if (fromMyProjects) {
+      return "/projects";
+    }
     if (isSignedInUser) {
-      // Sign in flow: All Projects → Sign In (always, regardless of where they came from)
+      // Sign in flow: All Projects → Sign In
       return "/student-signin";
     }
     // Create account flow: All Projects → Set up your profile
@@ -349,6 +354,12 @@ const ProjectFeed = () => {
       {/* Project Cards */}
       <main className="flex-1 overflow-y-auto px-3 sm:px-4 py-3 sm:py-4">
         <div className="mx-auto max-w-2xl space-y-3 sm:space-y-4 stagger-children">
+          
+          {/* Page Title */}
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">All Projects</h1>
+            <p className="text-sm sm:text-base text-muted-foreground mt-1">Browse available opportunities</p>
+          </div>
           
           {/* Compact My Projects Info Bar */}
           <Card 

@@ -114,16 +114,18 @@ const Profile = () => {
       {/* Header */}
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="flex h-16 items-center justify-between px-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate(-1)}
-            className="gap-2 text-gray-600 hover:text-gray-700 hover:bg-gray-50"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back
-          </Button>
-          <h1 className="text-lg sm:text-xl font-bold text-primary">Profile</h1>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate(-1)}
+              className="gap-2 text-gray-600 hover:text-gray-700 hover:bg-gray-50"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back
+            </Button>
+            <h1 className="text-lg sm:text-2xl font-bold text-primary">CampusBuild</h1>
+          </div>
           <Button
             variant="ghost"
             onClick={confirmGoHome}
@@ -138,6 +140,12 @@ const Profile = () => {
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto px-4 py-6">
         <div className="mx-auto max-w-2xl space-y-6">
+          {/* Page Title */}
+          <div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Profile</h2>
+            <p className="text-sm sm:text-base text-muted-foreground mt-1">View and manage your profile information</p>
+          </div>
+          
           {/* Profile Header Card */}
           <Card className="p-6">
             <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">

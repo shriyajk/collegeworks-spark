@@ -189,27 +189,29 @@ const TeamFormation = () => {
       {/* Header */}
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="flex h-16 items-center justify-between px-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              // If came from Find Teams page (via bottom panel), go back to Find Teams
-              if (location.state?.fromFindTeams) {
-                navigate("/find-teams");
-              } else if (location.state?.project) {
-                // Otherwise, go back to project detail if we have project state
-                navigate(`/project/${project.id}`, { state: { project } });
-              } else {
-                // Fallback to feed
-                navigate("/feed");
-              }
-            }}
-            className="gap-2 text-gray-600 hover:text-gray-700 hover:bg-gray-50"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back
-          </Button>
-          <h1 className="text-lg font-semibold">Team for: {project.title}</h1>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                // If came from Find Teams page (via bottom panel), go back to Find Teams
+                if (location.state?.fromFindTeams) {
+                  navigate("/find-teams");
+                } else if (location.state?.project) {
+                  // Otherwise, go back to project detail if we have project state
+                  navigate(`/project/${project.id}`, { state: { project } });
+                } else {
+                  // Fallback to feed
+                  navigate("/feed");
+                }
+              }}
+              className="gap-2 text-gray-600 hover:text-gray-700 hover:bg-gray-50"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back
+            </Button>
+            <h1 className="text-lg sm:text-2xl font-bold text-primary">CampusBuild</h1>
+          </div>
           <div className="w-10" /> {/* Spacer for centering */}
         </div>
       </header>
@@ -217,6 +219,11 @@ const TeamFormation = () => {
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto px-4 py-6">
         <div className="mx-auto max-w-2xl space-y-6">
+          {/* Page Title */}
+          <div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Find Teammates</h2>
+            <p className="text-sm sm:text-base text-muted-foreground mt-1">Team for: {project.title}</p>
+          </div>
           
           {/* Demo Notice for direct navigation */}
           {!location.state?.project && (

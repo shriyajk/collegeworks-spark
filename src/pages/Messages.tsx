@@ -231,32 +231,36 @@ const Messages = () => {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       {/* Header */}
-      <div className="p-4 border-b">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="flex h-14 sm:h-16 items-center justify-between px-3 sm:px-4">
+          <div className="flex items-center gap-2 sm:gap-3">
             <Button
               variant="ghost"
               onClick={() => navigate("/business-dashboard")}
-              className="gap-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+              className="gap-2 text-gray-600 hover:text-gray-700 hover:bg-gray-50 text-xs sm:text-base px-2 sm:px-4 h-8 sm:h-10"
             >
-              <ArrowLeft className="h-4 w-4" />
-              Back to Dashboard
+              <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4" />
+              Back
             </Button>
-            <div className="border-l pl-3 ml-3">
-              <h1 className="text-xl font-bold">Messages</h1>
-              <p className="text-sm text-muted-foreground">
-                Communicate with your project teams
-              </p>
-            </div>
+            <h1 className="text-lg sm:text-2xl font-bold text-primary">CampusBuild</h1>
           </div>
         </div>
-      </div>
+      </header>
 
       {/* Main Content */}
-      <div className="flex-1 flex">
-        {/* Conversations List */}
-        <div className="w-80 border-r bg-muted/20">
-          <div className="p-4 space-y-4">
+      <div className="flex-1 flex flex-col">
+        {/* Page Title */}
+        <div className="px-4 py-3 border-b bg-background">
+          <h2 className="text-xl sm:text-2xl font-bold text-foreground">Messages</h2>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
+            Communicate with your project teams
+          </p>
+        </div>
+        
+        <div className="flex-1 flex">
+          {/* Conversations List */}
+          <div className="w-80 border-r bg-muted/20">
+            <div className="p-4 space-y-4">
             {/* Search */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -436,6 +440,7 @@ const Messages = () => {
               </div>
             </div>
           )}
+        </div>
         </div>
       </div>
     </div>

@@ -25,6 +25,7 @@ import {
   Search,
   X,
   Trash2,
+  ArrowLeft,
 } from "lucide-react";
 
 interface ProjectApplication {
@@ -253,15 +254,29 @@ const Projects = () => {
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="flex h-14 sm:h-16 items-center justify-between px-3 sm:px-4">
           <div className="flex items-center gap-2 sm:gap-3">
-            <Button
-              variant="ghost"
-              onClick={() => navigate("/feed", { state: { fromMyProjects: true } })}
-              className="gap-1 sm:gap-2 text-purple-600 hover:text-purple-700 hover:bg-purple-50 text-xs sm:text-base px-2 sm:px-4 h-8 sm:h-10"
-            >
-              <Search className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">Browse Available Projects</span>
-            </Button>
-            <h1 className="text-lg sm:text-2xl font-bold text-primary">My Projects</h1>
+            {/* For new account creation: back button to All Projects */}
+            {!fromSignIn && (
+              <Button
+                variant="ghost"
+                onClick={() => navigate("/feed")}
+                className="gap-2 text-gray-600 hover:text-gray-700 hover:bg-gray-50 text-xs sm:text-base px-2 sm:px-4 h-8 sm:h-10"
+              >
+                <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4" />
+                Back
+              </Button>
+            )}
+            {/* For signed-in users: back button to Sign In */}
+            {fromSignIn && (
+              <Button
+                variant="ghost"
+                onClick={() => navigate("/student-signin")}
+                className="gap-2 text-gray-600 hover:text-gray-700 hover:bg-gray-50 text-xs sm:text-base px-2 sm:px-4 h-8 sm:h-10"
+              >
+                <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4" />
+                Back
+              </Button>
+            )}
+            <h1 className="text-lg sm:text-2xl font-bold text-primary">CampusBuild</h1>
           </div>
           <div className="flex items-center gap-1 sm:gap-3">
             <Button
@@ -296,43 +311,11 @@ const Projects = () => {
       <main className="flex-1 overflow-y-auto px-3 sm:px-4 py-4 sm:py-6">
         <div className="mx-auto max-w-4xl space-y-4 sm:space-y-6">
           
-          {/* My Projects Card */}
-          <Card className="p-6 sm:p-8 shadow-card">
-            <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4">
-              <div className="flex items-center gap-4 flex-1">
-                {/* Icon */}
-                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <Briefcase className="h-6 w-6 sm:h-7 sm:w-7 text-primary" />
-                </div>
-                
-                {/* Text Content */}
-                <div className="flex-1 text-center sm:text-left">
-                  <h2 className="text-xl sm:text-2xl font-bold text-primary mb-2">
-                    My Projects
-                  </h2>
-                  <p className="text-sm sm:text-base text-muted-foreground">
-                    Track your applications, active work, and completed projects
-                  </p>
-                </div>
-              </div>
-              
-              {/* Stats Preview */}
-              <div className="flex gap-4 sm:gap-6">
-                <div className="text-center">
-                  <div className="text-2xl sm:text-3xl font-bold text-primary">{totalApplied}</div>
-                  <div className="text-xs sm:text-sm text-muted-foreground">Applied</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl sm:text-3xl font-bold text-blue-600">{totalActive}</div>
-                  <div className="text-xs sm:text-sm text-muted-foreground">Active</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl sm:text-3xl font-bold text-green-600">{totalCompleted}</div>
-                  <div className="text-xs sm:text-sm text-muted-foreground">Done</div>
-                </div>
-              </div>
-            </div>
-          </Card>
+          {/* Page Title */}
+          <div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-foreground">My Projects</h2>
+            <p className="text-sm sm:text-base text-muted-foreground mt-1">Track your applications, active work, and completed projects</p>
+          </div>
           
           {/* Stats & Animation Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">

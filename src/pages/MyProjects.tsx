@@ -200,12 +200,7 @@ const MyProjects = () => {
               <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4" />
               <span className="hidden sm:inline">Back to Dashboard</span>
             </Button>
-            <div className="border-l pl-2 sm:pl-3 ml-1 sm:ml-3">
-              <h1 className="text-sm sm:text-xl font-bold truncate">My Projects</h1>
-              <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">
-                Manage all your posted projects
-              </p>
-            </div>
+            <h1 className="text-lg sm:text-2xl font-bold text-primary">CampusBuild</h1>
           </div>
           <Button
             onClick={() => navigate("/post-project")}
@@ -220,6 +215,11 @@ const MyProjects = () => {
       {/* Main Content */}
       <main className="flex-1 px-3 sm:px-4 py-4 sm:py-6">
         <div className="mx-auto max-w-6xl">
+          {/* Page Title */}
+          <div className="mb-4 sm:mb-6">
+            <h2 className="text-2xl sm:text-3xl font-bold text-foreground">My Projects</h2>
+            <p className="text-sm sm:text-base text-muted-foreground mt-1">Manage all your posted projects</p>
+          </div>
           
           {/* Stats Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">

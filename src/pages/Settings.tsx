@@ -88,30 +88,30 @@ const Settings = () => {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       {/* Header */}
-      <div className="p-4 border-b">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="flex h-14 sm:h-16 items-center justify-between px-3 sm:px-4">
+          <div className="flex items-center gap-2 sm:gap-3">
             <Button
               variant="ghost"
               onClick={() => navigate("/business-dashboard")}
-              className="gap-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+              className="gap-2 text-gray-600 hover:text-gray-700 hover:bg-gray-50 text-xs sm:text-base px-2 sm:px-4 h-8 sm:h-10"
             >
-              <ArrowLeft className="h-4 w-4" />
-              Back to Dashboard
+              <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4" />
+              Back
             </Button>
-            <div className="border-l pl-3 ml-3">
-              <h1 className="text-xl font-bold">Settings</h1>
-              <p className="text-sm text-muted-foreground">
-                Manage your business account and preferences
-              </p>
-            </div>
+            <h1 className="text-lg sm:text-2xl font-bold text-primary">CampusBuild</h1>
           </div>
         </div>
-      </div>
+      </header>
 
       {/* Main Content */}
       <main className="flex-1 px-4 py-6">
         <div className="mx-auto max-w-4xl">
+          {/* Page Title */}
+          <div className="mb-6">
+            <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Settings</h2>
+            <p className="text-sm sm:text-base text-muted-foreground mt-1">Manage your business account and preferences</p>
+          </div>
           
           <Tabs defaultValue="profile" className="space-y-6">
             <TabsList className="grid w-full grid-cols-5">

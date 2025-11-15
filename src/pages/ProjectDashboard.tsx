@@ -8,7 +8,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { 
   ArrowLeft,
   Star,
@@ -21,8 +20,6 @@ import {
   Link2,
   Download,
   Upload,
-  ChevronDown,
-  ChevronUp,
   DollarSign,
   AlertTriangle,
   Eye,
@@ -161,8 +158,6 @@ const ProjectDashboard = () => {
   const [selectedMilestone, setSelectedMilestone] = useState<Milestone | null>(null);
   const [changeRequest, setChangeRequest] = useState("");
   const [approvalChecked, setApprovalChecked] = useState(false);
-  const [communicationOpen, setCommunicationOpen] = useState(false);
-  const [unreadMessages] = useState(3);
   const [showChatModal, setShowChatModal] = useState(false);
   const [milestones, setMilestones] = useState(MILESTONES);
   const [chatMessages, setChatMessages] = useState([
@@ -517,44 +512,6 @@ const ProjectDashboard = () => {
             {/* Sidebar Column */}
             <div className="space-y-6">
               
-              {/* Communication Section */}
-              <Card className="p-6">
-                <Collapsible open={communicationOpen} onOpenChange={setCommunicationOpen}>
-                  <CollapsibleTrigger className="flex items-center justify-between w-full">
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-semibold">Team Messages</h3>
-                      {unreadMessages > 0 && (
-                        <Badge variant="destructive" className="h-5 w-5 p-0 text-xs">
-                          {unreadMessages}
-                        </Badge>
-                      )}
-                    </div>
-                    {communicationOpen ? (
-                      <ChevronUp className="h-4 w-4" />
-                    ) : (
-                      <ChevronDown className="h-4 w-4" />
-                    )}
-                  </CollapsibleTrigger>
-                  
-                  <CollapsibleContent className="space-y-4 mt-4">
-                    <div className="p-3 bg-muted/50 rounded-lg">
-                      <p className="text-sm font-medium">Alex:</p>
-                      <p className="text-sm text-muted-foreground">
-                        Can you review the color scheme?
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1">1 hour ago</p>
-                    </div>
-                    <Button 
-                      className="w-full gap-2"
-                      onClick={() => setShowChatModal(true)}
-                    >
-                      <MessageCircle className="h-4 w-4" />
-                      Open Chat
-                    </Button>
-                  </CollapsibleContent>
-                </Collapsible>
-              </Card>
-
               {/* Escrow Summary Card */}
               <Card className="p-6">
                 <div className="space-y-4">
