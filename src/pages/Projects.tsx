@@ -296,6 +296,44 @@ const Projects = () => {
       <main className="flex-1 overflow-y-auto px-3 sm:px-4 py-4 sm:py-6">
         <div className="mx-auto max-w-4xl space-y-4 sm:space-y-6">
           
+          {/* My Projects Card */}
+          <Card className="p-6 sm:p-8 shadow-card">
+            <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4">
+              <div className="flex items-center gap-4 flex-1">
+                {/* Icon */}
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Briefcase className="h-6 w-6 sm:h-7 sm:w-7 text-primary" />
+                </div>
+                
+                {/* Text Content */}
+                <div className="flex-1 text-center sm:text-left">
+                  <h2 className="text-xl sm:text-2xl font-bold text-primary mb-2">
+                    My Projects
+                  </h2>
+                  <p className="text-sm sm:text-base text-muted-foreground">
+                    Track your applications, active work, and completed projects
+                  </p>
+                </div>
+              </div>
+              
+              {/* Stats Preview */}
+              <div className="flex gap-4 sm:gap-6">
+                <div className="text-center">
+                  <div className="text-2xl sm:text-3xl font-bold text-primary">{totalApplied}</div>
+                  <div className="text-xs sm:text-sm text-muted-foreground">Applied</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl sm:text-3xl font-bold text-blue-600">{totalActive}</div>
+                  <div className="text-xs sm:text-sm text-muted-foreground">Active</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl sm:text-3xl font-bold text-green-600">{totalCompleted}</div>
+                  <div className="text-xs sm:text-sm text-muted-foreground">Done</div>
+                </div>
+              </div>
+            </div>
+          </Card>
+          
           {/* Stats & Animation Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
             {/* Quick Stats */}

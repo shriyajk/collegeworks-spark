@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useHomeConfirmation } from "@/hooks/use-home-confirmation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import { Bell, User, Home, Users, Briefcase, BarChart, FolderOpen, ArrowLeft } from "lucide-react";
 import {
   Select,
@@ -265,14 +266,6 @@ const ProjectFeed = () => {
               <ArrowLeft className="h-4 w-4" />
               Back
             </Button>
-            <Button
-              variant="ghost"
-              onClick={() => navigate("/projects")}
-              className="gap-1 sm:gap-2 text-purple-600 hover:text-purple-700 hover:bg-purple-50 text-xs sm:text-base px-2 sm:px-4 h-8 sm:h-10"
-            >
-              <FolderOpen className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">My Projects</span>
-            </Button>
             <h1 className="text-base sm:text-2xl font-bold text-gradient truncate">CampusBuild</h1>
           </div>
           <div className="flex items-center gap-1 sm:gap-3">
@@ -356,6 +349,46 @@ const ProjectFeed = () => {
       {/* Project Cards */}
       <main className="flex-1 overflow-y-auto px-3 sm:px-4 py-3 sm:py-4">
         <div className="mx-auto max-w-2xl space-y-3 sm:space-y-4 stagger-children">
+          
+          {/* Compact My Projects Info Bar */}
+          <Card 
+            onClick={() => navigate("/projects")}
+            role="button"
+            className="border-l-4 border-l-primary bg-purple-50/30 hover:bg-purple-50/50 transition-colors cursor-pointer"
+          >
+            <div className="p-3 sm:p-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                {/* Left side: Icon + Text */}
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  <div className="flex-shrink-0 w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <FolderOpen className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm sm:text-base font-semibold text-primary mb-0.5">
+                      My Projects
+                    </h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground">
+                      Quick access to your applications and active work.
+                    </p>
+                  </div>
+                </div>
+                
+                {/* Right side: Button */}
+                <Button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate("/projects");
+                  }}
+                  variant="default"
+                  size="sm"
+                  className="bg-gradient-primary hover:bg-gradient-primary-hover text-white shadow-sm hover:shadow-md transition-all w-full sm:w-auto"
+                >
+                  View →
+                </Button>
+              </div>
+            </div>
+          </Card>
+          
           {filteredProjects.map((project) => {
             const getBorderColor = (level: string) => {
               switch (level) {
