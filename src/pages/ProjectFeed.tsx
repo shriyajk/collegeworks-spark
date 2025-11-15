@@ -365,7 +365,7 @@ const ProjectFeed = () => {
           <Card 
             onClick={() => navigate("/projects")}
             role="button"
-            className="border-l-4 border-l-primary bg-purple-50/30 hover:bg-purple-50/50 transition-colors cursor-pointer"
+            className="border-l-4 border-l-primary bg-primary/10 hover:bg-primary/15 transition-colors cursor-pointer shadow-card"
           >
             <div className="p-3 sm:p-4">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
