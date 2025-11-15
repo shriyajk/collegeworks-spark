@@ -577,7 +577,7 @@ const Projects = () => {
                         </Button>
                         <Button 
                           variant="outline"
-                          onClick={() => navigate(`/project/${project.id}/messages`)}
+                          onClick={() => navigate("/messages", { state: { projectId: project.id } })}
                           className="flex-1"
                         >
                           Messages ({project.unreadMessages})

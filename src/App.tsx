@@ -18,6 +18,7 @@ import ProjectSubmitted from "./pages/ProjectSubmitted";
 import WaitingForApplications from "./pages/WaitingForApplications";
 import MyProjects from "./pages/MyProjects";
 import Messages from "./pages/Messages";
+import MessagesRouter from "./components/MessagesRouter";
 import Settings from "./pages/Settings";
 import ReviewApplications from "./pages/ReviewApplications";
 import ProjectDashboard from "./pages/ProjectDashboard";
@@ -58,7 +59,7 @@ const App = () => (
             <Route path="/project-submitted" element={<ProjectSubmitted />} />
             <Route path="/waiting-for-applications" element={<WaitingForApplications />} />
             <Route path="/my-projects" element={<MyProjects />} />
-            <Route path="/messages" element={<Messages />} />
+            <Route path="/messages" element={<MessagesRouter />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/review-applications" element={<ReviewApplications />} />
             <Route path="/project-dashboard" element={<ProjectDashboard />} />
